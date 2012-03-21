@@ -1,0 +1,10 @@
+{
+    "name": "webfactory/content-mapping",
+    "autoload": {
+        "psr-0": { "Webfactory\\ContentMapping": "" }
+    },
+    "target-dir": "Webfactory/ContentMapping",
+    "require": {
+        "webfactory/pdf-text-extraction": "1.0.*"
+    }
+}
