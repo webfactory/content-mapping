@@ -26,7 +26,7 @@ class GenericSource extends Source {
 
     protected function createMapper($baseObject) {
         $cls = $this->mapperClass;
-        return new $cls($baseObject, $this->log);
+        return new $cls($baseObject, $this->log, $this->extraction);
     }
 
     protected function createResultSet($peer, \Criteria $crit) {

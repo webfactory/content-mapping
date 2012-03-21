@@ -9,6 +9,7 @@ abstract class Source implements BaseSource {
 
     private $peer;
     protected $log;
+    protected $extraction;
 
     protected function getPeer() {
         if (!$this->peer) $this->peer = $this->createPeer();
@@ -17,6 +18,10 @@ abstract class Source implements BaseSource {
 
     public function setLogger(Logger $log) {
         $this->log = $log;
+    }
+
+    public function setExtraction(Extraction $extraction) {
+        $this->extraction = $extraction;
     }
 
     private function getFullyQualifiedPKName($peer) {
