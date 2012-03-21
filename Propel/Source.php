@@ -12,6 +12,8 @@ abstract class Source implements BaseSource {
     protected $extraction;
 
     protected function getPeer() {
+        require_once('creole/Creole.php');
+        \Creole::registerDriver('*', 'creole.contrib.DebugConnection');
         if (!$this->peer) $this->peer = $this->createPeer();
         return $this->peer;
     }
