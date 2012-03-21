@@ -4,6 +4,7 @@ namespace Webfactory\ContentMapping\Propel;
 
 use Webfactory\ContentMapping\Source as BaseSource;
 use Monolog\Logger;
+use Webfactory\PdfTextExtraction\Extraction;
 
 abstract class Source implements BaseSource {
 
@@ -56,7 +57,10 @@ abstract class Source implements BaseSource {
     }
 
     public function prepareMapper(\MySQLResultSet $rs) {
-        return $this->createMapper($this->hydrateCurrent($rs));
+        $mapper = $this->createMapper($this->hydrateCurrent($rs));
+        if ($this->extraction)
+            $mapper->setExtraction($this->extraction);
+        return $mapper;
     }
 
     public function getObjectIterator() {

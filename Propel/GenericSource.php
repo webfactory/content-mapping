@@ -8,7 +8,6 @@ class GenericSource extends Source {
     protected $mapperClass;
     protected $resultSetMethod;
 
-
     public function __construct($objectClass, $mapperClass, $resultSetMethod = null) {
         $this->objectClass = $objectClass;
         $this->mapperClass = $mapperClass;
@@ -26,7 +25,7 @@ class GenericSource extends Source {
 
     protected function createMapper($baseObject) {
         $cls = $this->mapperClass;
-        return new $cls($baseObject, $this->log, $this->extraction);
+        return new $cls($baseObject, $this->log);
     }
 
     protected function createResultSet($peer, \Criteria $crit) {

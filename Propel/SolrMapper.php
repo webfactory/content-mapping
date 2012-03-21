@@ -14,10 +14,13 @@ abstract class SolrMapper implements Mappable {
     protected $log;
     protected $textExtraction;
 
-    public function __construct(\BaseObject $o, Logger $log, Extraction $textExtraction) {
+    public function __construct(\BaseObject $o, Logger $log) {
         $this->object = $o;
         $this->peer = $o->getPeer(); // nicht in BaseObject garantiert, aber in Base* vorhanden
         $this->log = $log;
+    }
+
+    public function setExtraction(Extraction $textExtraction) {
         $this->textExtraction = $textExtraction;
     }
 
@@ -51,15 +54,21 @@ abstract class SolrMapper implements Mappable {
         // 	strip_tags als workaround für https://issues.apache.org/jira/browse/SOLR-42, evtl. hier am falschen Platz?
         if ($file = $this->getObjectProperty($propelFieldname, $object)) {
 
+            if (!$this->textExtraction) {
+                $this->log->err('PdfTextExtraction requested but no Extraction available for ' . get_class($this));
+                return;
+            }
+
+
             $obj = $object ? $object : $this->object;
             $start = microtime(true);
-            $this->log->debug("Running Pdf\TextExtraction for field $propelFieldname on " . get_class($obj) . ":" . $obj->getId());
+            $this->log->debug("Running PdfTextExtraction for field $propelFieldname on " . get_class($obj) . ":" . $obj->getId());
 
             $v = $this->textExtraction->extract($file->getContents());
             $v = str_replace('<p>', ' ', $v);
             $v = strip_tags($v);
 
-            $this->log->debug("Finished Pdf\TextExtraction");
+            $this->log->debug("Finished PdfTextExtraction");
             $this->log->notice(sprintf("Text extraction took %.2f seconds", microtime(true)-$start));
 
             $this->setValue($solrFieldname, $v);
