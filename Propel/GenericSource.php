@@ -11,7 +11,7 @@ class GenericSource extends Source {
 
     public function __construct($objectClass, $mapperClass, $resultSetMethod = null) {
         $this->objectClass = $objectClass;
-        $this->mapperClass = \Classloader::load($mapperClass);
+        $this->mapperClass = $mapperClass;
         $this->resultSetMethod = $resultSetMethod ? $resultSetMethod : 'doSelectRS';
     }
 
