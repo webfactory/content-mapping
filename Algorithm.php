@@ -23,9 +23,6 @@ class Algorithm {
         $this->destination = $destination;
         $this->log = $log;
         $this->forceUpdate = $forceUpdates;
-
-        $this->source->setLogger($log);
-        $this->destination->setLogger($log);
     }
 
     protected function prepareIterators() {
