@@ -5,6 +5,6 @@
     },
     "target-dir": "Webfactory/ContentMapping",
     "require": {
-        "webfactory/pdf-text-extraction": "1.0.3"
+        "webfactory/pdf-text-extraction": "1.0.*"
     }
 }
