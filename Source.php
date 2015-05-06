@@ -2,20 +2,34 @@
 
 namespace Webfactory\ContentMapping;
 
+use \Iterator;
 use Monolog\Logger;
 
-/*
- * Eine Quelle für Objekte, die in ein anderes System abgebildet werden sollen.
- * Die ObjectClass ist ein (beliebiger) String, der den Content-Typ identifiziert.
- * Der Iterator muss ContentMappables liefern, deren IDs
- * jeweils eindeutig im Kontext einer ObjectClass sind.
- * Zielsysteme (ContentMappingDestination) können weitere Anforderungen an die Objekte
- * stellen, die der Iterator liefert (z. B. speziellere Interfaces).
+/**
+ * Quell-System (z.B. Anbindung an eine Datenbank) für Objekte, die in ein Ziel-System (z.B. einen Solr-Index)
+ * abgebildet werden sollen.
  */
-interface Source {
-
+interface Source
+{
+    /**
+     * Hole String, der den Content-Typ identifiziert.
+     *
+     * @return string
+     */
     public function getObjectClass();
-    public function getObjectIterator();
-    public function setLogger(Logger $log);
 
+    /**
+     * Der Iterator muss \Webfactory\ContentMapping\Mappable liefern, deren IDs jeweils eindeutig im Kontext einer
+     * ObjectClass sind.
+     * Zielsysteme (\Webfactory\ContentMapping\Destination) können weitere Anforderungen an die vom Iterator gelieferten
+     * Objekte stellen (z.B. speziellere Interfaces wie \Webfactory\ContentMapping\Solr\Mappable).
+     *
+     * @return Iterator
+     */
+    public function getObjectIterator();
+
+    /**
+     * @param Logger $log
+     */
+    public function setLogger(Logger $log);
 }
