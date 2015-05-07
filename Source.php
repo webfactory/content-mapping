@@ -3,7 +3,7 @@
 namespace Webfactory\ContentMapping;
 
 use \Iterator;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * Quell-System (z.B. Anbindung an eine Datenbank) für Objekte, die in ein Ziel-System (z.B. einen Solr-Index)
@@ -30,7 +30,7 @@ interface Source
     public function getObjectIterator();
 
     /**
-     * @param Logger $log
+     * @param LoggerInterface $logger
      */
-    public function setLogger(Logger $log);
+    public function setLogger(LoggerInterface $logger);
 }

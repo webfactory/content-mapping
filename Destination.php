@@ -3,7 +3,7 @@
 namespace Webfactory\ContentMapping;
 
 use Iterator;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 
 /**
  * Ziel-System, das Content aufnehmen soll.
@@ -47,7 +47,7 @@ interface Destination
     public function delete(Mappable $destinationObject);
 
     /**
-     * @param Logger $log
+     * @param LoggerInterface $logger
      */
-    public function setLogger(Logger $log);
+    public function setLogger(LoggerInterface $logger);
 }
