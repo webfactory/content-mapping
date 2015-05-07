@@ -2,14 +2,22 @@
 
 namespace Webfactory\ContentMapping\Propel;
 
+use Psr\Log\LoggerInterface;
 use Webfactory\ContentMapping\Source as BaseSource;
-use Monolog\Logger;
 use Webfactory\PdfTextExtraction\Extraction;
 
 abstract class Source implements BaseSource {
 
     private $peer;
+
+    /**
+     * @var LoggerInterface
+     */
     protected $log;
+
+    /**
+     * @var Extraction
+     */
     protected $extraction;
 
     protected function getPeer() {
@@ -19,14 +27,21 @@ abstract class Source implements BaseSource {
         return $this->peer;
     }
 
-    public function setLogger(Logger $log) {
-        $this->log = $log;
+    /**
+     * {@inheritDoc}
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->log = $logger;
     }
 
     public function setExtraction(Extraction $extraction) {
         $this->extraction = $extraction;
     }
 
+    /**
+     * @param mixed $peer
+     * @return string
+     */
     private function getFullyQualifiedPKName($peer) {
         foreach ($peer->getTableMap()->getColumns() as $column)
             if ($column->isPrimaryKey())
@@ -63,6 +78,9 @@ abstract class Source implements BaseSource {
         return $mapper;
     }
 
+    /**
+     * @return ResultSetIterator
+     */
     public function getObjectIterator() {
         return new ResultSetIterator(
             $this->prepareResult(),
