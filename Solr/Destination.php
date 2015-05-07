@@ -2,9 +2,9 @@
 
 namespace Webfactory\ContentMapping\Solr;
 
+use Psr\Log\LoggerInterface;
 use Webfactory\ContentMapping\Destination as BaseDestination;
 use Webfactory\ContentMapping\Mappable as BaseMappable;
-use Monolog\Logger;
 
 /*
  * Stellt einen Apache_Solr_Service als ContentMappingDestination dar.
@@ -23,7 +23,7 @@ class Destination implements BaseDestination {
         $this->solrService = $solrService;
     }
 
-    public function setLogger(Logger $log) {
+    public function setLogger(LoggerInterface $log) {
         $this->log = $log;
     }
 
@@ -48,7 +48,6 @@ class Destination implements BaseDestination {
 
     protected function map(Mappable $sourceObject, \Apache_Solr_Document $into) {
         try {
-            $into->setField('hash', $sourceObject->getHash());
             $sourceObject->mapToSolrDocument($into);
             $this->newOrUpdatedDocuments[] = $into;
             $this->possiblyFlush();
@@ -66,6 +65,7 @@ class Destination implements BaseDestination {
         $document->setField('id', $objectClass . ':' . $sourceObject->getObjectId());
         $document->setField('objectid', $sourceObject->getObjectId());
         $document->setField('objectclass', $objectClass);
+        $document->setField('hash', $sourceObject->getHash());
         $this->map($sourceObject, $document);
     }
 
@@ -76,7 +76,10 @@ class Destination implements BaseDestination {
         if (!$sourceObject instanceof Mappable)
             throw new \Exception('SourceObject is not a Solr\Mappable');
 
-        $this->map($sourceObject, clone $destinationObject->getSolrDocument());
+        $document = $destinationObject->getSolrDocument();
+        $document->setField('hash', $sourceObject->getHash());
+
+        $this->map($sourceObject, $document);
     }
 
     public function delete(BaseMappable $destinationObject) {
