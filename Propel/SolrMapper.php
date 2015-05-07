@@ -2,32 +2,57 @@
 
 namespace Webfactory\ContentMapping\Propel;
 
+use Psr\Log\LoggerInterface;
 use Webfactory\ContentMapping\Solr\Mappable;
-use Monolog\Logger;
 use Webfactory\PdfTextExtraction\Extraction;
 
-abstract class SolrMapper implements Mappable {
-
+abstract class SolrMapper implements Mappable
+{
+    /**
+     * @var \BaseObject
+     */
     protected $object;
+
+    /**
+     * @var mixed
+     */
     protected $peer;
+
+    /**
+     * @var \Apache_Solr_Document
+     */
     protected $solrDocument;
-    protected $log;
+
+    /**
+     * @var Extraction
+     */
     protected $textExtraction;
 
-    public function __construct(\BaseObject $o, Logger $log) {
+    /**
+     * @var LoggerInterface
+     */
+    protected $log;
+
+    public function __construct(\BaseObject $o, LoggerInterface $logger) {
         $this->object = $o;
         $this->peer = $o->getPeer(); // nicht in BaseObject garantiert, aber in Base* vorhanden
-        $this->log = $log;
+        $this->log = $logger;
     }
 
     public function setExtraction(Extraction $textExtraction) {
         $this->textExtraction = $textExtraction;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getObjectId() {
         return $this->object->getId();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function mapToSolrDocument(\Apache_Solr_Document $document) {
         $this->solrDocument = $document;
         $this->applyMappings();
@@ -36,12 +61,22 @@ abstract class SolrMapper implements Mappable {
 
     abstract protected function applyMappings();
 
+    /**
+     * @param string $solrFieldname
+     * @param string $propelFieldname
+     * @param mixed|null $object
+     */
     protected function mapDate($solrFieldname, $propelFieldname, $object = null) {
         if ($date = $this->getObjectProperty($propelFieldname, $object, array(self::SOLR_DATE_FORMAT))) {
             $this->setValue($solrFieldname, $date);
         }
     }
 
+    /**
+     * @param string $solrFieldname
+     * @param string $propelFieldname
+     * @param mixed|null $object
+     */
     protected function mapText($solrFieldname, $propelFieldname, $object = null) {
         // strip_tags als workaround für https://issues.apache.org/jira/browse/SOLR-42, evtl. hier am falschen Platz?
         $v = $this->getObjectProperty($propelFieldname, $object);
@@ -50,6 +85,11 @@ abstract class SolrMapper implements Mappable {
         $this->setValue($solrFieldname, $v);
     }
 
+    /**
+     * @param string $solrFieldname
+     * @param string $propelFieldname
+     * @param mixed|null $object
+     */
     protected function mapBinaryExtract($solrFieldname, $propelFieldname, $object = null) {
         // 	strip_tags als workaround für https://issues.apache.org/jira/browse/SOLR-42, evtl. hier am falschen Platz?
         if ($file = $this->getObjectProperty($propelFieldname, $object)) {
@@ -75,14 +115,28 @@ abstract class SolrMapper implements Mappable {
         }
     }
 
+    /**
+     * @param string $solrFieldname
+     * @param mixed $value
+     */
     protected function setValue($solrFieldname, $value) {
         $this->solrDocument->setField($solrFieldname, $value);
     }
 
+    /**
+     * @param string $solrFieldname
+     * @param mixed $value
+     */
     protected function setMultiValue($solrFieldname, $value) {
         $this->solrDocument->setMultiValue($solrFieldname, $value);
     }
 
+    /**
+     * @param string $propelFieldname
+     * @param mixed|null $object
+     * @param array $parameters
+     * @return mixed
+     */
     protected function getObjectProperty($propelFieldname, $object = null, array $parameters = array()) {
         if ($object === null) {
             $object = $this->object;
@@ -101,8 +155,10 @@ abstract class SolrMapper implements Mappable {
         return call_user_func_array(array($object, $method), $parameters);
     }
 
+    /**
+     * @param mixed $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false
+     */
     protected function boost($boost) {
         $this->solrDocument->setBoost($boost);
     }
-
 }
