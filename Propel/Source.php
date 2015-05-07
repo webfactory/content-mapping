@@ -79,10 +79,10 @@ abstract class Source implements BaseSource {
     }
 
     /**
-     * @return ResultSetIterator
+     * @return ResultSetCallbackIterator
      */
     public function getObjectIterator() {
-        return new ResultSetIterator(
+        return new ResultSetCallbackIterator(
             $this->prepareResult(),
             array($this, 'prepareMapper')
         );

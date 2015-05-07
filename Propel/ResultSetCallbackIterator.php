@@ -2,16 +2,23 @@
 
 namespace Webfactory\ContentMapping\Propel;
 
-class ResultSetIterator implements \Iterator {
-
+class ResultSetCallbackIterator implements \Iterator
+{
+    /**
+     * @var \MySQLResultSet
+     */
     protected $resultSet;
+
+    /**
+     * @var mixed
+     */
     protected $current;
+
     protected $callback;
 
     public function __construct(\MySQLResultSet $resultSet, $callback) {
         $this->resultSet = $resultSet;
         $this->callback = $callback;
-        $this->current = null;
     }
 
     public function current() {
@@ -44,5 +51,4 @@ class ResultSetIterator implements \Iterator {
             return $this->resultSet->next();
         }
     }
-
 }
