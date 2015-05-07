@@ -11,13 +11,13 @@ use Psr\Log\LoggerInterface;
 interface Destination
 {
     /**
-     * Hole einen Iterator, der \Webfactory\ContentMapping\Mappable für die im Ziel-System existierenden Objekte
-     * liefert, und zwar nach ihrer ID aufsteigend sortiert.
+     * Gibt einen Iterator über \Webfactory\ContentMapping\Mappable zurück. Jedes im Zielsystem vorhandene Objekt der
+     * $objectClass wird durch genau eine Mappable-Instanz repräsentiert.
      *
      * @param string $objectClass
-     * @return Iterator
+     * @return Iterator über \Webfactory\ContentMapping\Mappable
      */
-    public function getObjectIterator($objectClass);
+    public function getMappablesOrderedById($objectClass);
 
     /**
      * Bilde ein neues $sourceObject der Klasse $objectClass aus dem Quell-System im Ziel-System ab.

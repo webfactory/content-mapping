@@ -27,10 +27,10 @@ class Algorithm {
 
     protected function prepareIterators() {
         $this->log->info("Fetching ObjectIterator from source");
-        $this->sourceIterator = $this->source->getObjectIterator();
+        $this->sourceIterator = $this->source->getMappablesOrderedById();
 
         $this->log->info("Fetching ObjectIterator from destination");
-        $this->destinationIterator = $this->destination->getObjectIterator($this->objectClass);
+        $this->destinationIterator = $this->destination->getMappablesOrderedById($this->objectClass);
 
         $this->log->info("Finished fetching iterators");
 

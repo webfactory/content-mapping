@@ -81,7 +81,7 @@ abstract class Source implements BaseSource {
     /**
      * @return ResultSetCallbackIterator
      */
-    public function getObjectIterator() {
+    public function getMappablesOrderedById() {
         return new ResultSetCallbackIterator(
             $this->prepareResult(),
             array($this, 'prepareMapper')

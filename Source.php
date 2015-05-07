@@ -19,15 +19,12 @@ interface Source
     public function getObjectClass();
 
     /**
-     * Hole einen Iterator, der \Webfactory\ContentMapping\Mappable liefert, deren IDs jeweils eindeutig im Kontext
-     * einer ObjectClass sind, und die nach ihrer ID aufsteigend sortiert sind.
+     * Gibt einen Iterator über \Webfactory\ContentMapping\Mappable zurück. Jedes im Quellsystem vorhandene Objekt wird
+     * durch genau eine Mappable-Instanz repräsentiert.
      *
-     * Zielsysteme (\Webfactory\ContentMapping\Destination) können weitere Anforderungen an die vom Iterator gelieferten
-     * Objekte stellen (z.B. speziellere Interfaces wie \Webfactory\ContentMapping\Solr\Mappable).
-     *
-     * @return Iterator
+     * @return Iterator über \Webfactory\ContentMapping\Mappable
      */
-    public function getObjectIterator();
+    public function getMappablesOrderedById();
 
     /**
      * @param LoggerInterface $logger

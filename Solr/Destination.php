@@ -27,7 +27,7 @@ class Destination implements BaseDestination {
         $this->log = $log;
     }
 
-    public function getObjectIterator($objectClass) {
+    public function getMappablesOrderedById($objectClass) {
 
         $res = $this->solrService->search(
                 '{!raw f=objectclass}' . $objectClass,
