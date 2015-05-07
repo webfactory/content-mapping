@@ -1,14 +1,19 @@
 <?php
 
 namespace Webfactory\ContentMapping;
-/*
- * Ein Objekt, das zwischen zwei Content-Systemen abgebildet werden soll.
- * Die Objekt-ID muss numerisch sein (und nur im Kontext gleichartiger Objekte eindeutig),
- * der Hash ist ein beliebiger String.
+
+/**
+ * Objekt, das zwischen einem Quell- und einem Ziel-System abgebildet werden soll.
  */
-interface Mappable {
-
+interface Mappable
+{
+    /**
+     * @return string, muss numerisch und im Kontext der Objektklasse eindeutig sein.
+     */
     public function getObjectId();
-    public function getHash();
 
+    /**
+     * @return string, z.B. ein Datumsstring - wird nur auf Gleichheit überprüft
+     */
+    public function getHash();
 }
