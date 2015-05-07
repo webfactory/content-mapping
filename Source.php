@@ -19,8 +19,9 @@ interface Source
     public function getObjectClass();
 
     /**
-     * Der Iterator muss \Webfactory\ContentMapping\Mappable liefern, deren IDs jeweils eindeutig im Kontext einer
-     * ObjectClass sind.
+     * Hole einen Iterator, der \Webfactory\ContentMapping\Mappable liefert, deren IDs jeweils eindeutig im Kontext
+     * einer ObjectClass sind, und die nach ihrer ID aufsteigend sortiert sind.
+     *
      * Zielsysteme (\Webfactory\ContentMapping\Destination) können weitere Anforderungen an die vom Iterator gelieferten
      * Objekte stellen (z.B. speziellere Interfaces wie \Webfactory\ContentMapping\Solr\Mappable).
      *
