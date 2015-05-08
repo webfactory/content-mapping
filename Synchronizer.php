@@ -123,6 +123,7 @@ final class Synchronizer
      */
     private function delete($destinationObject)
     {
+        $this->destination->delete($destinationObject);
         $this->destinationQueue->next();
     }
 

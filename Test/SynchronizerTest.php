@@ -71,7 +71,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function synchronizeInsertsNewObjects()
+    public function synchronizeCreatesNewObjects()
     {
         $idOfNewSourceObject = 1;
         $newSourceObject = new SourceObjectDummy();
@@ -93,9 +93,24 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function synchronizeCallsCommitAfterInsert()
+    public function synchronizeCallsCommitAfterCreatingNewObject()
     {
-        $this->fail();
+        $idOfNewSourceObject = 1;
+        $newSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newSourceObject)));
+
+        $emptySet = new \ArrayIterator();
+        $this->setUpDestinationToReturn($emptySet);
+
+        $this->mapper->expects($this->any())
+                     ->method('idOf')
+                     ->will($this->returnValue($idOfNewSourceObject));
+        $this->destination->expects($this->once())
+                          ->method('createObject');
+        $this->destination->expects($this->once())
+                          ->method('commit');
+
+        $this->synchronizer->synchronize($this->className);
     }
 
     /**
@@ -103,7 +118,17 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     public function synchronizeDeletesOutdatedObjects()
     {
-        $this->fail();
+        $emptySet = new \ArrayIterator();
+        $this->setUpSourceToReturn($emptySet);
+
+        $outdatedDestinationObject = new SourceObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($outdatedDestinationObject)));
+
+        $this->destination->expects($this->once())
+                          ->method('delete')
+                          ->with($outdatedDestinationObject);
+
+        $this->synchronizer->synchronize($this->className);
     }
 
     /**
@@ -111,7 +136,19 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     public function synchronizeCallsCommitAfterDelete()
     {
-        $this->fail();
+        $emptySet = new \ArrayIterator();
+        $this->setUpSourceToReturn($emptySet);
+
+        $outdatedDestinationObject = new SourceObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($outdatedDestinationObject)));
+
+        $this->destination->expects($this->once())
+                          ->method('delete');
+
+        $this->destination->expects($this->once())
+                          ->method('commit');
+
+        $this->synchronizer->synchronize($this->className);
     }
 
     /**
