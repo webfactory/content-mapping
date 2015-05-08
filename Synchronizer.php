@@ -74,6 +74,7 @@ final class Synchronizer
         $this->className = $className;
         $this->sourceQueue = $this->source->getObjectsOrderedById();
         $this->destinationQueue = $this->destination->getObjectsOrderedById($className);
+        $this->logger->info('Start of synchronization for {className}.', array('className' => $className));
 
         while ($this->sourceQueue->valid() && $this->destinationQueue->valid()) {
             $this->compareQueuesAndReactAccordingly();
@@ -83,6 +84,7 @@ final class Synchronizer
         $this->deleteRemainingDestinationObjects();
 
         $this->destination->commit();
+        $this->logger->info('End of synchronization for {className}.', array('className' => $className));
     }
 
     private function compareQueuesAndReactAccordingly()
@@ -97,12 +99,7 @@ final class Synchronizer
         } elseif ($destinationObjectId < $sourceObjectId) {
             $this->delete($destinationObject);
         } elseif ($destinationObjectId === $sourceObjectId) {
-            if ($this->mapper->map($sourceObject, $destinationObject) === true) {
-                $this->destination->updated($destinationObject);
-            }
-
-            $this->destinationQueue->next();
-            $this->sourceQueue->next();
+            $this->update($sourceObject, $destinationObject);
         } else {
             $this->destinationQueue->next();
             $this->sourceQueue->next();
@@ -121,6 +118,7 @@ final class Synchronizer
         $this->mapper->map($sourceObject, $newObjectInDestinationSystem);
 
         $this->sourceQueue->next();
+        $this->logger->info('Inserted object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
     }
 
     /**
@@ -130,6 +128,25 @@ final class Synchronizer
     {
         $this->destination->delete($destinationObject);
         $this->destinationQueue->next();
+        $this->logger->info('Deleted object with id {id}.', array('id' => $this->destination->idOf($destinationObject)));
+    }
+
+    /**
+     * @param mixed $sourceObject
+     * @param mixed $destinationObject
+     */
+    private function update($sourceObject, $destinationObject)
+    {
+        $destinationObjectHasChanged = $this->mapper->map($sourceObject, $destinationObject);
+        if ($destinationObjectHasChanged === true) {
+            $this->destination->updated($destinationObject);
+            $this->logger->info('Updated object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
+        } else {
+            $this->logger->info('Kept object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
+        }
+
+        $this->destinationQueue->next();
+        $this->sourceQueue->next();
     }
 
     private function insertRemainingSourceObjects()
