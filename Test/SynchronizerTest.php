@@ -71,7 +71,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function synchronizeCreatesNewObjects()
+    public function synchronizeHandlesLongerSourceQueuesByCreatingNewObjects()
     {
         $idOfNewSourceObject = 1;
         $newSourceObject = new SourceObjectDummy();
@@ -116,7 +116,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function synchronizeDeletesOutdatedObjects()
+    public function synchronizeHandlesLongerDestinationQueuesByDeletingOutdatedObjects()
     {
         $emptySet = new \ArrayIterator();
         $this->setUpSourceToReturn($emptySet);
@@ -147,6 +147,30 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
 
         $this->destination->expects($this->once())
                           ->method('commit');
+
+        $this->synchronizer->synchronize($this->className);
+    }
+
+    /**
+     * @test
+     */
+    public function synchronizeHandlesSameSourceIdAsDestinationIdInQueueComparisonByUpdatingObject()
+    {
+        $sameIdForSourceAndDestinationObject = 1;
+        $newerVersionOfSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+
+        $olderVersionOfDestinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+
+        $this->mapper->expects($this->any())
+                     ->method('idOf')
+                     ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->destination->expects($this->any())
+                          ->method('idOf')
+                          ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->mapper->expects($this->once())
+                     ->method('map');
 
         $this->synchronizer->synchronize($this->className);
     }
@@ -241,9 +265,55 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function synchronizeHandlesSourceListWithMoreThanOneEntry()
+    public function synchronizeHandlesLowerSourceIdInQueueComparisonByCreatingObject()
     {
-        $this->fail();
+        $idOfSourceObject = 1;
+        $sourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($sourceObject)));
+
+        $idOfDestinationObject = 2;
+        $destinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($destinationObject)));
+
+        $this->mapper->expects($this->any(0))
+                     ->method('idOf')
+                     ->will($this->returnValue($idOfSourceObject));
+        $this->destination->expects($this->any())
+                          ->method('idOf')
+                          ->will($this->returnValue($idOfDestinationObject));
+
+        $this->destination->expects($this->once())
+                          ->method('createObject')
+                          ->with($idOfSourceObject, $this->className);
+
+        $this->synchronizer->synchronize($this->className);
+    }
+
+    /**
+     * @test
+     */
+    public function synchronizeHandlesHigherSourceIdInQueueComparisonByCreatingObject()
+    {
+        $idOfSourceObject = 2;
+        $sourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($sourceObject)));
+
+        $idOfDestinationObject = 1;
+        $destinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($destinationObject)));
+
+        $this->mapper->expects($this->any(0))
+                     ->method('idOf')
+                     ->will($this->returnValue($idOfSourceObject));
+        $this->destination->expects($this->any())
+                          ->method('idOf')
+                          ->will($this->returnValue($idOfDestinationObject));
+
+        $this->destination->expects($this->once())
+                          ->method('delete')
+                          ->with($destinationObject);
+
+        $this->synchronizer->synchronize($this->className);
     }
 
     /**
