@@ -1,0 +1,105 @@
+<?php
+
+namespace Webfactory\ContentMapping\Propel;
+
+use Psr\Log\LoggerInterface;
+use Webfactory\ContentMapping\SourceAdapter;
+use Webfactory\PdfTextExtraction\Extraction;
+
+/**
+ * Adapter for Propel as a source system for objects.
+ */
+abstract class PropelSourceAdapter implements SourceAdapter
+{
+    /**
+     * @var mixed
+     */
+    private $peer;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @var Extraction
+     */
+    protected $extraction;
+
+    /**
+     * @return \Iterator
+     */
+    public function getObjectsOrderedById()
+    {
+        /** @var $result \ResultSet */
+        $result = $this->prepareResult();
+        return $result->getIterator();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return \ResultSet
+     * @throws \PropelException
+     */
+    protected function prepareResult()
+    {
+        $p = $this->getPeer();
+        $criteria = new \Criteria();
+        $criteria->setDistinct();
+        $criteria->addAscendingOrderByColumn($this->getFullyQualifiedPKName($p));
+
+        $this->logger->debug("Propel\Source calling ...::createResultSet()");
+
+        $r = $this->createResultSet($p, $criteria);
+
+        $this->logger->debug("...::createResultSet() returned");
+        $this->logger->debug("The last query was: " . \Propel::getConnection()->getLastExecutedQuery());
+
+        return $r;
+    }
+
+    /**
+     * @return mixed
+     */
+    protected function getPeer()
+    {
+        require_once('creole/Creole.php');
+        \Creole::registerDriver('*', 'creole.contrib.DebugConnection');
+        if (!$this->peer) {
+            $this->peer = $this->createPeer();
+        }
+        return $this->peer;
+    }
+
+    /**
+     * @return mixed
+     */
+    abstract protected function createPeer();
+
+    /**
+     * @param mixed $peer
+     * @return string
+     */
+    private function getFullyQualifiedPKName($peer)
+    {
+        foreach ($peer->getTableMap()->getColumns() as $column) {
+            if ($column->isPrimaryKey()) {
+                return $column->getFullyQualifiedName();
+            }
+        }
+    }
+
+    /**
+     * @param mixed $peer
+     * @param \Criteria $criteria
+     * @return \ResultSet
+     */
+    abstract protected function createResultSet($peer, \Criteria $criteria);
+}
