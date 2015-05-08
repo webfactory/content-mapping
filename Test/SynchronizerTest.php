@@ -156,7 +156,28 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     public function synchronizeCallsUpdatedForObjectsThatGotUpdated()
     {
-        $this->fail();
+        $sameIdForSourceAndDestinationObject = 1;
+        $newerVersionOfSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+
+        $olderVersionOfDestinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+
+        $this->mapper->expects($this->any())
+                     ->method('idOf')
+                     ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->destination->expects($this->any())
+                          ->method('idOf')
+                          ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->mapper->expects($this->once())
+                     ->method('map')
+                     ->will($this->returnValue(true));
+
+        $this->destination->expects($this->once())
+                          ->method('updated')
+                          ->with($olderVersionOfDestinationObject);
+
+        $this->synchronizer->synchronize($this->className);
     }
 
     /**
@@ -164,7 +185,29 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     public function synchronizeCallsCommitAfterUpdated()
     {
-        $this->fail();
+        $sameIdForSourceAndDestinationObject = 1;
+        $newerVersionOfSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+
+        $olderVersionOfDestinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+
+        $this->mapper->expects($this->any())
+                    ->method('idOf')
+                    ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->destination->expects($this->any())
+                          ->method('idOf')
+                          ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->mapper->expects($this->once())
+                    ->method('map')
+                    ->will($this->returnValue(true));
+        $this->destination->expects($this->once())
+                          ->method('updated');
+
+        $this->destination->expects($this->once())
+                          ->method('commit');
+
+        $this->synchronizer->synchronize($this->className);
     }
 
     /**
@@ -172,7 +215,27 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     public function synchronizeDoesNotCallUpdatedForObjectsThatRemainedTheSame()
     {
-        $this->fail();
+        $sameIdForSourceAndDestinationObject = 1;
+        $newerVersionOfSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+
+        $olderVersionOfDestinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+
+        $this->mapper->expects($this->any())
+                    ->method('idOf')
+                    ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->destination->expects($this->any())
+                          ->method('idOf')
+                          ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->mapper->expects($this->once())
+                    ->method('map')
+                    ->will($this->returnValue(false));
+
+        $this->destination->expects($this->never())
+                          ->method('updated');
+
+        $this->synchronizer->synchronize($this->className);
     }
 
     /**

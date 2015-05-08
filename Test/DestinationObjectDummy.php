@@ -3,11 +3,11 @@
 namespace Webfactory\ContentMapping\Test;
 
 /**
- * Dummy for objects in the source system.
+ * Dummy for objects in the destination system.
  *
  * @final by default.
  */
-class SourceObjectDummy
+class DestinationObjectDummy
 {
 
 }

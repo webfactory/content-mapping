@@ -97,7 +97,12 @@ final class Synchronizer
         } elseif ($destinationObjectId < $sourceObjectId) {
             $this->delete($destinationObject);
         } elseif ($destinationObjectId === $sourceObjectId) {
-            // if mapper->map() === true -> updated
+            if ($this->mapper->map($sourceObject, $destinationObject) === true) {
+                $this->destination->updated($destinationObject);
+            }
+
+            $this->destinationQueue->next();
+            $this->sourceQueue->next();
         } else {
             $this->destinationQueue->next();
             $this->sourceQueue->next();
