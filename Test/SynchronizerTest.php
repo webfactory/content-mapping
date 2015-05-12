@@ -57,6 +57,24 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function synchronizeRewindsSourceQueueAndDestinationQueue()
+    {
+        $sourceQueue = $this->getMock('\Iterator');
+        $sourceQueue->expects($this->once())
+                    ->method('rewind');
+        $this->setUpSourceToReturn($sourceQueue);
+
+        $destinationQueue = $this->getMock('\Iterator');
+        $destinationQueue->expects($this->once())
+                         ->method('rewind');
+        $this->setUpDestinationToReturn($destinationQueue);
+
+        $this->synchronizer->synchronize($this->className, false);
+    }
+
+    /**
+     * @test
+     */
     public function synchronizeHandlesEmptySourceObjectsSetAndEmptyDestinationObjectsSet()
     {
         $emptySet = new \ArrayIterator();

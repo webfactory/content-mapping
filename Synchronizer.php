@@ -76,7 +76,10 @@ final class Synchronizer
         $this->mapper->setForce($force);
 
         $this->sourceQueue = $this->source->getObjectsOrderedById();
+        $this->sourceQueue->rewind();
+
         $this->destinationQueue = $this->destination->getObjectsOrderedById($className);
+        $this->destinationQueue->rewind();
 
         $this->logger->info('Start of synchronization for {className}.', array('className' => $className));
 
