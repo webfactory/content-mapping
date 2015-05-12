@@ -60,7 +60,6 @@ abstract class PropelSourceAdapter implements SourceAdapter
         $r = $this->createResultSet($p, $criteria);
 
         $this->logger->debug("...::createResultSet() returned");
-        $this->logger->debug("The last query was: " . \Propel::getConnection()->getLastExecutedQuery());
 
         return $r;
     }

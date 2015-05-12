@@ -62,7 +62,13 @@ final class SolrDestinationAdapter implements DestinationAdapter
             )
         )->response;
 
-        $this->logger->notice("SolrDestinationAdapter found {$res->numFound} objects for objectClass $objectClass");
+        $this->logger->info(
+            "SolrDestinationAdapter found {number} objects for objectClass {objectClass}",
+            array(
+                'number' => $res->numFound,
+                'objectClass' => $objectClass,
+            )
+        );
 
         return new \ArrayIterator($res->docs);
     }
@@ -110,9 +116,9 @@ final class SolrDestinationAdapter implements DestinationAdapter
     {
         $this->flush();
 
-        $this->logger->notice("Solr commit and optimize");
+        $this->logger->info("Solr commit and optimize");
         $this->solrService->commit(); // macht auch ein optimize()
-        $this->logger->notice("Finished commit");
+        $this->logger->info("Finished commit");
     }
 
     /**
@@ -123,7 +129,8 @@ final class SolrDestinationAdapter implements DestinationAdapter
      */
     public function idOf($objectInDestinationSystem)
     {
-        return $objectInDestinationSystem->getField('objectid');
+        $field = $objectInDestinationSystem->getField('objectid');
+        return $field['value'];
     }
 
     protected function possiblyFlush()
@@ -136,10 +143,12 @@ final class SolrDestinationAdapter implements DestinationAdapter
     protected function flush()
     {
         if ($this->deletedDocumentIds || $this->newOrUpdatedDocuments) {
-            $this->logger->notice(
-                "Flushing " . count($this->newOrUpdatedDocuments) . " inserts or updates and " . count(
-                    $this->deletedDocumentIds
-                ) . " deletes"
+            $this->logger->info(
+                "Flushing {numberInsertsUpdates} inserts or updates and {numberDeletes} deletes",
+                array(
+                    'numberInsertsUpdates' => count($this->newOrUpdatedDocuments),
+                    'numberDeletes' => count($this->deletedDocumentIds),
+                )
             );
             if ($this->deletedDocumentIds) {
                 $this->solrService->deleteByMultipleIds($this->deletedDocumentIds);
@@ -149,7 +158,7 @@ final class SolrDestinationAdapter implements DestinationAdapter
             }
             $this->deletedDocumentIds = array();
             $this->newOrUpdatedDocuments = array();
-            $this->logger->notice("Flushed");
+            $this->logger->debug("Flushed");
         }
     }
 }

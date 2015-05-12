@@ -72,6 +72,11 @@ final class Synchronizer
      */
     public function synchronize($className, $force)
     {
+        $this->logger->notice(
+            'Start of ' . ($force? 'forced ' : ''). 'synchronization for {className}.',
+            array('className' => $className)
+        );
+
         $this->className = $className;
         $this->mapper->setForce($force);
 
@@ -80,8 +85,6 @@ final class Synchronizer
 
         $this->destinationQueue = $this->destination->getObjectsOrderedById($className);
         $this->destinationQueue->rewind();
-
-        $this->logger->info('Start of synchronization for {className}.', array('className' => $className));
 
         while ($this->sourceQueue->valid() && $this->destinationQueue->valid()) {
             $this->compareQueuesAndReactAccordingly();
@@ -136,7 +139,12 @@ final class Synchronizer
     {
         $this->destination->delete($destinationObject);
         $this->destinationQueue->next();
-        $this->logger->info('Deleted object with id {id}.', array('id' => $this->destination->idOf($destinationObject)));
+        $this->logger->info(
+            'Deleted object with id {id}.',
+            array(
+                'id' => $this->destination->idOf($destinationObject),
+            )
+        );
     }
 
     /**

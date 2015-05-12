@@ -156,8 +156,12 @@ abstract class PropelToSolrMapper implements Mapper
             $v = str_replace('<p>', ' ', $v);
             $v = strip_tags($v);
 
-            $this->log->debug("Finished PdfTextExtraction");
-            $this->log->notice(sprintf("Text extraction took %.2f seconds", microtime(true) - $start));
+            $this->log->info(
+                "Text extraction took {seconds} seconds",
+                array(
+                    'seconds' => round(microtime(true) - $start, 2)
+                )
+            );
 
             $this->setValue($solrFieldname, $v);
         }
