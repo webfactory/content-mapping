@@ -65,7 +65,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
 
         $this->setExpectedException(null);
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -87,7 +87,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
                           ->method('createObject')
                           ->with($idOfNewSourceObject, $this->className);
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -110,7 +110,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
                           ->method('commit');
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -128,7 +128,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
                           ->method('delete')
                           ->with($outdatedDestinationObject);
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -148,7 +148,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
                           ->method('commit');
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -172,7 +172,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->mapper->expects($this->once())
                      ->method('map');
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -201,7 +201,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
                           ->method('updated')
                           ->with($olderVersionOfDestinationObject);
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -231,7 +231,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
                           ->method('commit');
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -259,7 +259,38 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->never())
                           ->method('updated');
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
+    }
+
+    /**
+     * @test
+     */
+    public function synchronizeCanBeForcedToUpdate()
+    {
+        $sameIdForSourceAndDestinationObject = 1;
+        $newerVersionOfSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+
+        $olderVersionOfDestinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+
+        $this->mapper->expects($this->any())
+                    ->method('idOf')
+                    ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->destination->expects($this->any())
+                          ->method('idOf')
+                          ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->mapper->expects($this->once())
+                     ->method('setForce')
+                     ->with(true);
+        $this->mapper->expects($this->once())
+                    ->method('map')
+                    ->will($this->returnValue(true));
+
+        $this->destination->expects($this->once())
+                          ->method('updated');
+
+        $this->synchronizer->synchronize($this->className, true);
     }
 
     /**
@@ -286,7 +317,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
                           ->method('createObject')
                           ->with($idOfSourceObject, $this->className);
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**
@@ -313,7 +344,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
                           ->method('delete')
                           ->with($destinationObject);
 
-        $this->synchronizer->synchronize($this->className);
+        $this->synchronizer->synchronize($this->className, false);
     }
 
     /**

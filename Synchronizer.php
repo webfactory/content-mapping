@@ -68,12 +68,16 @@ final class Synchronizer
      * Synchronizes the $className objects from the source system to the destination system.
      *
      * @param string $className
+     * @param bool $force
      */
-    public function synchronize($className)
+    public function synchronize($className, $force)
     {
         $this->className = $className;
+        $this->mapper->setForce($force);
+
         $this->sourceQueue = $this->source->getObjectsOrderedById();
         $this->destinationQueue = $this->destination->getObjectsOrderedById($className);
+
         $this->logger->info('Start of synchronization for {className}.', array('className' => $className));
 
         while ($this->sourceQueue->valid() && $this->destinationQueue->valid()) {

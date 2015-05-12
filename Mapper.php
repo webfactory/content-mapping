@@ -24,4 +24,11 @@ interface Mapper
      * @return int
      */
     public function idOf($objectInSourceSystem);
+
+    /**
+     * Sets whether to force an update on the target object, even if the source has not changed.
+     *
+     * @param bool $force
+     */
+    public function setForce($force);
 }
