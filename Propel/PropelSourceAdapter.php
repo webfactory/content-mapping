@@ -33,7 +33,7 @@ abstract class PropelSourceAdapter implements SourceAdapter
     {
         /** @var $result \ResultSet */
         $result = $this->prepareResult();
-        return $result->getIterator();
+        return new ResultSetWithCallbackIterator($result, array($this, 'hydrate'));
     }
 
     /**
@@ -70,9 +70,9 @@ abstract class PropelSourceAdapter implements SourceAdapter
      */
     protected function getPeer()
     {
-        require_once('creole/Creole.php');
-        \Creole::registerDriver('*', 'creole.contrib.DebugConnection');
         if (!$this->peer) {
+            require_once('creole/Creole.php');
+            \Creole::registerDriver('*', 'creole.contrib.DebugConnection');
             $this->peer = $this->createPeer();
         }
         return $this->peer;
@@ -102,4 +102,20 @@ abstract class PropelSourceAdapter implements SourceAdapter
      * @return \ResultSet
      */
     abstract protected function createResultSet($peer, \Criteria $criteria);
+
+    /**
+     * Hydrate a result set. Used as a callback by the ResultSetWithCallbackIterator and hence public.
+     *
+     * @param \MySQLResultSet $resultSet
+     * @return mixed Hydrated Propel object
+     * @throws \PropelException
+     */
+    public function hydrate(\MySQLResultSet $resultSet)
+    {
+        $omClass = $this->getPeer()->getOMClass();
+        $objectClass = \Propel::import($omClass);
+        $object = new $objectClass();
+        $object->hydrate($resultSet);
+        return $object;
+    }
 }
