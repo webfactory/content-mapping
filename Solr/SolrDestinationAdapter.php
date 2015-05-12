@@ -62,7 +62,7 @@ final class SolrDestinationAdapter implements DestinationAdapter
             )
         )->response;
 
-        $this->logger->notice("Solr\Destination found {$res->numFound} objects for objectClass $objectClass");
+        $this->logger->notice("SolrDestinationAdapter found {$res->numFound} objects for objectClass $objectClass");
 
         return new \ArrayIterator($res->docs);
     }
