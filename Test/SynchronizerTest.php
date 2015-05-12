@@ -93,6 +93,29 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function synchronizeCallsUpdatedAfterCreatingNewObject()
+    {
+        $idOfNewSourceObject = 1;
+        $newSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newSourceObject)));
+
+        $emptySet = new \ArrayIterator();
+        $this->setUpDestinationToReturn($emptySet);
+
+        $this->mapper->expects($this->any())
+                     ->method('idOf')
+                     ->will($this->returnValue($idOfNewSourceObject));
+        $this->destination->expects($this->once())
+                          ->method('createObject');
+        $this->destination->expects($this->once())
+                          ->method('updated');
+
+        $this->synchronizer->synchronize($this->className, false);
+    }
+
+    /**
+     * @test
+     */
     public function synchronizeCallsCommitAfterCreatingNewObject()
     {
         $idOfNewSourceObject = 1;

@@ -120,6 +120,7 @@ final class Synchronizer
             $this->className
         );
         $this->mapper->map($sourceObject, $newObjectInDestinationSystem);
+        $this->destination->updated($newObjectInDestinationSystem);
 
         $this->sourceQueue->next();
         $this->logger->info('Inserted object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
