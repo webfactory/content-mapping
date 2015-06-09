@@ -56,12 +56,13 @@ abstract class PropelToSolrMapper implements Mapper
     }
 
     /**
-     * @param mixed $objectInSourceSystem
+     * @param mixed $sourceEntity
+     *
      * @return int
      */
-    public function idOf($objectInSourceSystem)
+    public function idOf($sourceEntity)
     {
-        return $objectInSourceSystem->getId();
+        return $sourceEntity->getId();
     }
 
     /**
@@ -75,15 +76,16 @@ abstract class PropelToSolrMapper implements Mapper
     /**
      * This implementation is a wrapper for legacy Mappers.
      *
-     * @param mixed $objectInSourceSystem Propel source object
-     * @param \Apache_Solr_Document $objectInDestinationSystem
+     * @param mixed $sourceEntity Propel source object
+     * @param \Apache_Solr_Document $destinationEntity
+     *
      * @return boolean whether the $objectInDestinationSystem has changed
      */
-    public function map($objectInSourceSystem, $objectInDestinationSystem)
+    public function map($sourceEntity, $destinationEntity)
     {
-        $this->object = $objectInSourceSystem;
+        $this->object = $sourceEntity;
         $this->peer = $this->object->getPeer();
-        $this->solrDocument = $objectInDestinationSystem;
+        $this->solrDocument = $destinationEntity;
         $solrDocumentHasChanged = $this->applyMappings();
         $this->peer = null;
         $this->object = null;

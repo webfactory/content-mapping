@@ -8,22 +8,27 @@ namespace Webfactory\ContentMapping;
 interface Mapper
 {
     /**
-     * Maps an $objectInSourceSystem into an $objectInDestinationSystem, especially by copying and converting it's
-     * values.
+     * Takes care of mapping the content from the $sourceEntity into the $destinationEntity.
      *
-     * @param mixed $objectInSourceSystem
-     * @param mixed $objectInDestinationSystem
-     * @return boolean whether the $objectInDestinationSystem has changed
+     * What exactly these entities are depends on the source and destination system. The objects
+     * passed in will be those returned from the SourceAdapter::getObjectsOrderedById() and
+     * DestinationAdapter::getObjectsOrderedById() methods.
+     *
+     * @param mixed $sourceEntity
+     * @param mixed $destinationEntity
+     *
+     * @return boolean Returns true when the $destinationEntity was updated and needs to be written to the destination system; false otherwise.
      */
-    public function map($objectInSourceSystem, $objectInDestinationSystem);
+    public function map($sourceEntity, $destinationEntity);
 
     /**
      * Get the id of an object in the source system.
      *
-     * @param mixed $objectInSourceSystem
+     * @param mixed $sourceEntity
+     *
      * @return int
      */
-    public function idOf($objectInSourceSystem);
+    public function idOf($sourceEntity);
 
     /**
      * Sets whether to force an update on the target object, even if the source has not changed.
