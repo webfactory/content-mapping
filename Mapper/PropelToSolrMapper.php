@@ -56,13 +56,12 @@ abstract class PropelToSolrMapper implements Mapper
     }
 
     /**
-     * @param mixed $sourceEntity
-     *
+     * @param mixed $sourceObject
      * @return int
      */
-    public function idOf($sourceEntity)
+    public function idOf($sourceObject)
     {
-        return $sourceEntity->getId();
+        return $sourceObject->getId();
     }
 
     /**
@@ -76,16 +75,15 @@ abstract class PropelToSolrMapper implements Mapper
     /**
      * This implementation is a wrapper for legacy Mappers.
      *
-     * @param mixed $sourceEntity Propel source object
-     * @param \Apache_Solr_Document $destinationEntity
-     *
+     * @param mixed $sourceObject Propel source object
+     * @param \Apache_Solr_Document $destinationObject
      * @return boolean whether the $objectInDestinationSystem has changed
      */
-    public function map($sourceEntity, $destinationEntity)
+    public function map($sourceObject, $destinationObject)
     {
-        $this->object = $sourceEntity;
+        $this->object = $sourceObject;
         $this->peer = $this->object->getPeer();
-        $this->solrDocument = $destinationEntity;
+        $this->solrDocument = $destinationObject;
         $solrDocumentHasChanged = $this->applyMappings();
         $this->peer = null;
         $this->object = null;
@@ -223,7 +221,7 @@ abstract class PropelToSolrMapper implements Mapper
     /**
      * Set the boost factor for the Solr Document. The higher the $boost, the higher this document will be ranked.
      *
-     * @param $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false.
+     * @param mixed $boost Use false for default boost, else cast to float that should be > 0 or will be treated as false.
      */
     protected function boost($boost)
     {
