@@ -15,7 +15,6 @@
   "target-dir": "Webfactory/ContentMapping",
 
   "require": {
-    "webfactory/pdf-text-extraction": "1.0.*",
     "psr/log": "~1.0"
   },
 

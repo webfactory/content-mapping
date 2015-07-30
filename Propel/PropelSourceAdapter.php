@@ -4,7 +4,6 @@ namespace Webfactory\ContentMapping\Propel;
 
 use Psr\Log\LoggerInterface;
 use Webfactory\ContentMapping\SourceAdapter;
-use Webfactory\PdfTextExtraction\Extraction;
 
 /**
  * Adapter for Propel as a source system for objects.
@@ -20,11 +19,6 @@ abstract class PropelSourceAdapter implements SourceAdapter
      * @var LoggerInterface
      */
     protected $logger;
-
-    /**
-     * @var Extraction
-     */
-    protected $extraction;
 
     /**
      * @return \Iterator

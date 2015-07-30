@@ -4,7 +4,6 @@ namespace Webfactory\ContentMapping\Mapper;
 
 use Psr\Log\LoggerInterface;
 use Webfactory\ContentMapping\Mapper;
-use Webfactory\PdfTextExtraction\Extraction;
 
 /**
  * Legacy helper to map objects from a Propel source to a Solr destination.
@@ -36,23 +35,16 @@ abstract class PropelToSolrMapper implements Mapper
     protected $log;
 
     /**
-     * @var Extraction
-     */
-    protected $textExtraction;
-
-    /**
      * @var bool
      */
     protected $force = false;
 
     /**
      * @param LoggerInterface $logger
-     * @param Extraction $extraction
      */
-    public function __construct(LoggerInterface $logger = null, Extraction $extraction = null)
+    public function __construct(LoggerInterface $logger = null)
     {
         $this->log = $logger;
-        $this->textExtraction = $extraction;
     }
 
     /**
@@ -127,44 +119,6 @@ abstract class PropelToSolrMapper implements Mapper
         $v = str_replace('<p>', ' ', $v);
         $v = strip_tags($v);
         $this->setValue($solrFieldname, $v);
-    }
-
-    /**
-     * Helper method for mapping text that has yet to be extracted from binary data.
-     *
-     * @param string $solrFieldname
-     * @param string $propelFieldname
-     * @param mixed|null $propelObject
-     */
-    protected function mapBinaryExtract($solrFieldname, $propelFieldname, $propelObject = null)
-    {
-        // 	strip_tags als workaround für https://issues.apache.org/jira/browse/SOLR-42, evtl. hier am falschen Platz?
-        if ($file = $this->getObjectProperty($propelFieldname, $propelObject)) {
-
-            if (!$this->textExtraction) {
-                $this->log->err('PdfTextExtraction requested but no Extraction available for ' . get_class($this));
-                return;
-            }
-
-            $obj = $propelObject ? $propelObject : $this->object;
-            $start = microtime(true);
-            $this->log->debug(
-                "Running PdfTextExtraction for field $propelFieldname on " . get_class($obj) . ":" . $obj->getId()
-            );
-
-            $v = $this->textExtraction->extract($file->getContents());
-            $v = str_replace('<p>', ' ', $v);
-            $v = strip_tags($v);
-
-            $this->log->info(
-                "Text extraction took {seconds} seconds",
-                array(
-                    'seconds' => round(microtime(true) - $start, 2)
-                )
-            );
-
-            $this->setValue($solrFieldname, $v);
-        }
     }
 
     /**
