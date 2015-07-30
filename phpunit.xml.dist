@@ -11,6 +11,6 @@
     </testsuites>
 
     <php>
-        <server name="KERNEL_DIR" value="tests/" />
+        <server name="KERNEL_DIR" value="tests/"/>
     </php>
 </phpunit>

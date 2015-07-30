@@ -73,7 +73,7 @@ final class Synchronizer
     public function synchronize($className, $force)
     {
         $this->logger->notice(
-            'Start of ' . ($force? 'forced ' : ''). 'synchronization for {className}.',
+            'Start of ' . ($force ? 'forced ' : '') . 'synchronization for {className}.',
             array('className' => $className)
         );
 
