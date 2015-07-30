@@ -1,4 +1,10 @@
 <?php
+/*
+ * (c) webfactory GmbH <info@webfactory.de>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 foreach (array(__DIR__ . "/../lib/autoload.php", __DIR__ . "/../vendor/autoload.php") as $file) {
     if (file_exists($file)) {
