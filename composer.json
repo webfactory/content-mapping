@@ -26,5 +26,9 @@
     "psr-0": { "Webfactory\\ContentMapping": "" }
   },
 
-  "target-dir": "Webfactory/ContentMapping"
+  "target-dir": "Webfactory/ContentMapping",
+
+  "suggest": {
+    "reprovinci/solr-php-client": "Or a compatible fork of https://github.com/PTCInc/solr-php-client, if you want to use the SolrDestinationAdapter."
+  }
 }
