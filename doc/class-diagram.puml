@@ -1,0 +1,33 @@
+@startuml
+
+hide empty methods
+hide empty fields
+
+class Synchronizer {
+    +synchronize($className, $force)
+}
+
+interface SourceAdapter {
+    +getObjectsOrderedById()
+}
+
+interface Mapper {
+    +map($sourceObject, $destinationObject) : bool hasChanged
+    +idOf($sourceObject)
+    +setForce($force)
+}
+
+interface DestinationAdapter {
+    +getObjectsOrderedById($className)
+    +createObject($id, $className)
+    +delete($objectInDestinationSystem)
+    +updated($objectInDestinationSystem)
+    +commit()
+    +idOf($objectInDestinationSystem)
+}
+
+Synchronizer --> SourceAdapter
+Synchronizer --> Mapper
+Synchronizer --> DestinationAdapter
+
+@enduml
