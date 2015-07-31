@@ -3,6 +3,7 @@ content-mapping
 
 [![Build Status](https://travis-ci.org/webfactory/content-mapping.svg?branch=master)](https://travis-ci.org/webfactory/content-mapping)
 [![Coverage Status](https://coveralls.io/repos/webfactory/content-mapping/badge.svg?branch=master&service=github)](https://coveralls.io/github/webfactory/content-mapping?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/webfactory/content-mapping/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/webfactory/content-mapping/?branch=master)
 
 content-mapping is a mini framework for mapping content from a source to a destination system. E.g. from Propel objects
 to Solr, from Doctrine entities to ElasticSearch or from one XML structure to another. It features interfaces to guide
