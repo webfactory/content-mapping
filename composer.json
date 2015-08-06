@@ -23,7 +23,7 @@
   },
 
   "autoload": {
-    "psr-0": { "Webfactory\\ContentMapping": "" }
+    "psr-4": { "Webfactory\\ContentMapping\\": "src" }
   },
 
   "target-dir": "Webfactory/ContentMapping",
