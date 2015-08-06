@@ -45,34 +45,27 @@ say an object has been updated or both Iterators have been processed, i.e. chang
 Usage
 -----
 
-To make use of the ``Synchronizer``, you need implementations for the ``SourceAdaper``, ``Mapper`` and
-``DestinationAdapter``.
+To construct a ``Synchronizer``, you need implementations for the ``SourceAdaper``, ``Mapper`` and
+``DestinationAdapter``. Please find abstract templates and ready-to-use generic implementations of SourceAdapters and
+DestinationAdapters in the [webfactory/content-mapping-*](https://github.com/search?q=webfactory%2Fcontent-mapping)
+packages. The Mapper usually is very specific for your project, so you probably want to implement it in your
+application.
 
-You may find the example implementations shipped with the library useful:
+```php
+use Webfactory\ContentMapping\Synchronizer;
+use Webfactory\ContentMapping\SourceAdapter\Propel\GenericPropelSourceAdapter;
 
-**SourceAdapters:**
+$sourceAdapter = ...; // see the readme of the corresponding package on how to construct it
+$mapper = ...; // construct your own implementation
+$destinationAdapter = ...; // see the readme of the corresponding package on how to construct it
+$logger = ...; // just a PSR-3 logger
 
-* The ``GenericDoctrineSourceAdapter`` can be configured with a Doctrine repository and a method name to
-  ``getObjectsOrderedById()``
-* With some assumptions, the abstract ``PropelSourceAdapter`` only needs an implementation of ``createPeer()`` and
-  ``createResultSet($peer, \Criteria $criteria)`` to query a Propel peer to ``getObjectsOrderedById()``. Such are
-  provided in a generic way via the ``GenericPropelSourceAdapter``.
+$classNameToSynchronize = 'MyClass';
+$force = false; // if true, objects in destination system will be updated even if no changes are detected
 
-**Mapper:**
-
-* The ``PropelToSolrMapper`` uses some accessor magic features to provide convenience methods for maping and converting
-  fields from a Propel object to a Solr document.
-
-**DestinationAdapter:**
-
-* The ``SolrDestinationAdapter`` is a complete DestinationAdapter for Solr based on a Solr PHP client
-  (reprovinci/solr-php-client or compatible fork of [the original solr-php-client](https://github.com/PTCInc/solr-php-client)). 
-
-If you need to write an own implementation of any interface, please feel free to open a pull request. We'll be happy to
-share it! 
-
-Implementations ready? Inject them into the ``Synchronizer``'s constructor, call ``Synchronizer->synchronize()`` and
-lay back!
+$synchronizer = new Synchronizer($sourceAdapter, $mapper, $destinationAdapter, $logger);
+$synchronizer->synchronize($classNameToSynchronize, $force);
+```
 
 
 Credits, Copyright and License
