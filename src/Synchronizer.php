@@ -131,8 +131,9 @@ final class Synchronizer
             $this->mapper->idOf($sourceObject),
             $this->className
         );
-        $this->mapper->map($sourceObject, $newObjectInDestinationSystem);
-        $this->destination->updated($newObjectInDestinationSystem);
+
+        $mapResult = $this->mapper->map($sourceObject, $newObjectInDestinationSystem);
+        $this->destination->updated($mapResult->getObject());
 
         $this->sourceQueue->next();
         $this->logger->info('Inserted object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
@@ -159,9 +160,9 @@ final class Synchronizer
      */
     private function update($sourceObject, $destinationObject)
     {
-        $destinationObjectHasChanged = $this->mapper->map($sourceObject, $destinationObject);
-        if ($destinationObjectHasChanged === true) {
-            $this->destination->updated($destinationObject);
+        $mapResult = $this->mapper->map($sourceObject, $destinationObject);
+        if ($mapResult->getObjectHasChanged() === true) {
+            $this->destination->updated($mapResult->getObject());
             $this->logger->info('Updated object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
         } else {
             $this->logger->info('Kept object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));

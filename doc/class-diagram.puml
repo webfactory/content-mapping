@@ -12,8 +12,8 @@ interface SourceAdapter {
 }
 
 interface Mapper {
-    +map($sourceObject, $destinationObject) : bool hasChanged
-    +idOf($sourceObject)
+    +map($sourceObject, $destinationObject) : MapResult
+    +idOf($sourceObject):int
     +setForce($force)
 }
 
@@ -23,7 +23,7 @@ interface DestinationAdapter {
     +delete($objectInDestinationSystem)
     +updated($objectInDestinationSystem)
     +commit()
-    +idOf($objectInDestinationSystem)
+    +idOf($objectInDestinationSystem):int
 }
 
 Synchronizer --> SourceAdapter

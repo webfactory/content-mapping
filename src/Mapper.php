@@ -22,8 +22,7 @@ interface Mapper
      *
      * @param mixed $sourceObject
      * @param mixed $destinationObject
-     * @return boolean Returns true when the $destinationObject was updated and needs to be written to the destination
-     * system; false otherwise.
+     * @return MapResult
      */
     public function map($sourceObject, $destinationObject);
 
