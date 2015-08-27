@@ -11,6 +11,7 @@ namespace Webfactory\ContentMapping\Test;
 use Psr\Log\NullLogger;
 use Webfactory\ContentMapping\DestinationAdapter;
 use Webfactory\ContentMapping\Mapper;
+use Webfactory\ContentMapping\MapResult;
 use Webfactory\ContentMapping\SourceAdapter;
 use Webfactory\ContentMapping\Synchronizer;
 
@@ -107,9 +108,15 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->mapper->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($idOfNewSourceObject));
+        $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
             ->method('createObject')
-            ->with($idOfNewSourceObject, $this->className);
+            ->with($idOfNewSourceObject, $this->className)
+            ->will($this->returnValue($newlyCreatedObject));
+        $mapResult = new MapResult($newlyCreatedObject, false);
+        $this->mapper->expects($this->any())
+            ->method('map')
+            ->will($this->returnValue($mapResult));
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -129,8 +136,15 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->mapper->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($idOfNewSourceObject));
+        $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
-            ->method('createObject');
+            ->method('createObject')
+            ->with($idOfNewSourceObject, $this->className)
+            ->will($this->returnValue($newlyCreatedObject));
+        $mapResult = new MapResult($newlyCreatedObject, false);
+        $this->mapper->expects($this->any())
+            ->method('map')
+            ->will($this->returnValue($mapResult));
         $this->destination->expects($this->once())
             ->method('updated');
 
@@ -152,8 +166,15 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->mapper->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($idOfNewSourceObject));
+        $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
-            ->method('createObject');
+            ->method('createObject')
+            ->with($idOfNewSourceObject, $this->className)
+            ->will($this->returnValue($newlyCreatedObject));
+        $mapResult = new MapResult($newlyCreatedObject, false);
+        $this->mapper->expects($this->any())
+            ->method('map')
+            ->will($this->returnValue($mapResult));
         $this->destination->expects($this->once())
             ->method('commit');
 
@@ -216,8 +237,10 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $mapResult = new MapResult($olderVersionOfDestinationObject, true);
         $this->mapper->expects($this->once())
-            ->method('map');
+            ->method('map')
+            ->will($this->returnValue($mapResult));;
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -240,9 +263,10 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $mapResult = new MapResult($olderVersionOfDestinationObject, true);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(true));
+            ->will($this->returnValue($mapResult));;
 
         $this->destination->expects($this->once())
             ->method('updated')
@@ -269,9 +293,10 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $mapResult = new MapResult($olderVersionOfDestinationObject, true);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(true));
+            ->will($this->returnValue($mapResult, true));;
         $this->destination->expects($this->once())
             ->method('updated');
 
@@ -299,9 +324,10 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $mapResult = new MapResult($olderVersionOfDestinationObject, false);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(false));
+            ->will($this->returnValue($mapResult));;
 
         $this->destination->expects($this->never())
             ->method('updated');
@@ -330,9 +356,10 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->mapper->expects($this->once())
             ->method('setForce')
             ->with(true);
+        $mapResult = new MapResult($olderVersionOfDestinationObject, true);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(true));
+            ->will($this->returnValue($mapResult));;
 
         $this->destination->expects($this->once())
             ->method('updated');
@@ -360,9 +387,15 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->method('idOf')
             ->will($this->returnValue($idOfDestinationObject));
 
+        $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
             ->method('createObject')
-            ->with($idOfSourceObject, $this->className);
+            ->with($idOfSourceObject, $this->className)
+            ->will($this->returnValue($newlyCreatedObject));
+        $mapResult = new MapResult($newlyCreatedObject, true);
+        $this->mapper->expects($this->once())
+            ->method('map')
+            ->will($this->returnValue($mapResult));;
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -386,6 +419,11 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->any())
             ->method('idOf')
             ->will($this->returnValue($idOfDestinationObject));
+
+        $mapResult = new MapResult($destinationObject, true);
+        $this->mapper->expects($this->once())
+            ->method('map')
+            ->will($this->returnValue($mapResult));;
 
         $this->destination->expects($this->once())
             ->method('delete')
