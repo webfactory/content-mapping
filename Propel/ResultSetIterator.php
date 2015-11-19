@@ -8,7 +8,7 @@ class ResultSetIterator implements \Iterator {
     protected $current;
     protected $callback;
 
-    public function __construct(\MySQLResultSet $resultSet, $callback) {
+    public function __construct(\ResultSet $resultSet, $callback) {
         $this->resultSet = $resultSet;
         $this->callback = $callback;
         $this->current = null;

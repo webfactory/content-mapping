@@ -49,14 +49,14 @@ abstract class Source implements BaseSource {
         return $r;
     }
 
-    protected function hydrateCurrent(\MySQLResultSet $rs) {
+    protected function hydrateCurrent(\ResultSet $rs) {
         $cls = \Propel::import($this->getPeer()->getOMClass());
         $obj = new $cls();
         $obj->hydrate($rs);
         return $obj;
     }
 
-    public function prepareMapper(\MySQLResultSet $rs) {
+    public function prepareMapper(\ResultSet $rs) {
         $mapper = $this->createMapper($this->hydrateCurrent($rs));
         if ($this->extraction)
             $mapper->setExtraction($this->extraction);
