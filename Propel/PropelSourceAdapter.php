@@ -105,11 +105,11 @@ abstract class PropelSourceAdapter implements SourceAdapter
     /**
      * Hydrate a result set. Used as a callback by the ResultSetWithCallbackIterator and hence public.
      *
-     * @param \MySQLResultSet $resultSet
+     * @param \ResultSet $resultSet
      * @return mixed Hydrated Propel object
      * @throws \PropelException
      */
-    public function hydrate(\MySQLResultSet $resultSet)
+    public function hydrate(\ResultSet $resultSet)
     {
         $omClass = $this->getPeer()->getOMClass();
         $objectClass = \Propel::import($omClass);

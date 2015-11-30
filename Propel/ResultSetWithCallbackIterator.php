@@ -14,7 +14,7 @@ namespace Webfactory\ContentMapping\Propel;
 final class ResultSetWithCallbackIterator implements \Iterator
 {
     /**
-     * @var \MySQLResultSet Result set to iterate over.
+     * @var \ResultSet Result set to iterate over.
      */
     private $resultSet;
 
@@ -29,10 +29,10 @@ final class ResultSetWithCallbackIterator implements \Iterator
     private $callback;
 
     /**
-     * @param \MySQLResultSet $resultSet
+     * @param \ResultSet $resultSet
      * @param $callback
      */
-    public function __construct(\MySQLResultSet $resultSet, $callback)
+    public function __construct(\ResultSet $resultSet, $callback)
     {
         $this->resultSet = $resultSet;
         $this->callback = $callback;
