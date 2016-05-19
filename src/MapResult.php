@@ -33,6 +33,30 @@ final class MapResult
     private $objectHasChanged;
 
     /**
+     * Convenience constructor to create a MapResult when the mapping
+     * yields no changes and no update needs to be done.
+     *
+     * @return MapResult
+     */
+    public static function unchanged()
+    {
+        return new self(null, false);
+    }
+
+    /**
+     * Convenience constructor to create a MapResult that carries a new or updated
+     * object that needs to be written to the destination system.
+     *
+     * @param $object mixed The updated object
+     *
+     * @return MapResult
+     */
+    public static function changed($object)
+    {
+        return new self($object, true);
+    }
+
+    /**
      * @param mixed|null $object
      * @param bool  $objectHasChanged
      */
