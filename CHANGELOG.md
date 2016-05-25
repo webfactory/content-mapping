@@ -1,4 +1,4 @@
-CHANGELOG for 3.1
+CHANGELOG for 3.2   
 =================
 
 * New interface: \Webfactory\ContentMapping\ProgressListenerInterface
