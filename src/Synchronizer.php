@@ -120,6 +120,8 @@ final class Synchronizer
             $this->destinationQueue->next();
             $this->sourceQueue->next();
         }
+
+        $this->notifyProgress();
     }
 
     /**
@@ -160,7 +162,12 @@ final class Synchronizer
      */
     private function update($sourceObject, $destinationObject)
     {
+        if ($this->destination instanceof UpdateableObjectProviderInterface) {
+            $destinationObject = $this->destination->prepareUpdate($destinationObject);
+        }
+
         $mapResult = $this->mapper->map($sourceObject, $destinationObject);
+
         if ($mapResult->getObjectHasChanged() === true) {
             $this->destination->updated($mapResult->getObject());
             $this->logger->info('Updated object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
@@ -176,6 +183,7 @@ final class Synchronizer
     {
         while ($this->sourceQueue->valid()) {
             $this->insert($this->sourceQueue->current());
+            $this->notifyProgress();
         }
     }
 
@@ -183,6 +191,14 @@ final class Synchronizer
     {
         while ($this->destinationQueue->valid()) {
             $this->delete($this->destinationQueue->current());
+            $this->notifyProgress();
+        }
+    }
+
+    private function notifyProgress()
+    {
+        if ($this->destination instanceof ProgressListenerInterface) {
+            $this->destination->afterObjectProcessed();
         }
     }
 }

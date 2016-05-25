@@ -26,6 +26,16 @@ interface DestinationAdapter {
     +idOf($objectInDestinationSystem):int
 }
 
+interface UpdateableObjectProviderInterface {
+    +prepareUpdate($destinationObject):mixed
+}
+note bottom: By implementing this, DestinationAdapter\ncan use different objects for updates than\nthose returned from getObjectsOrderedById().
+
+interface ProgressListenerInterface {
+    +afterObjectProcessed()
+}
+note bottom: When DestinationAdapters implement this,\nafterObjectProcessed() will be called after\nevery step the Synchronizer made.
+
 Synchronizer --> SourceAdapter
 Synchronizer --> Mapper
 Synchronizer --> DestinationAdapter

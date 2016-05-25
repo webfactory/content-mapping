@@ -1,3 +1,14 @@
+CHANGELOG for 3.1
+=================
+
+* New interface: \Webfactory\ContentMapping\ProgressListenerInterface
+  If your DestinationAdapter implementation also implements this interface, it will be notified for every
+  step the synchronization progressed, that is, after every object that has been created, updated or deleted.
+  
+* New interface: \Webfactory\ContentMapping\UpdateableObjectProviderInterface
+  If your DestinationAdapter implementation also implements this interface, it can create new object instances
+  for update operations. Do this if your objects returned from getObjectsOrderedById() cannot be updated.
+
 CHANGELOG for 3.0
 =================
 
