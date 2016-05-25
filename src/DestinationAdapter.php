@@ -10,10 +10,6 @@ namespace Webfactory\ContentMapping;
 
 use Iterator;
 
-/**
- * Adapter for a destination system (e.g. a Solr-Index) that will contain mappings of the objects in a source system
- * (e.g. a Propel managed database).
- */
 interface DestinationAdapter
 {
     /**
@@ -42,6 +38,10 @@ interface DestinationAdapter
 
     /**
      * This method is a hook e.g. to notice an external change tracker that the $object has been updated.
+     *
+     * Although the name is somewhat misleading, it will be called after the Mapper has processed
+     *   a) new objects created by the createObject() method
+     *   b) changed objects created by the prepareUpdate() method *only if* the object actually changed.
      *
      * @param mixed $objectInDestinationSystem
      */

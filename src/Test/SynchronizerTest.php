@@ -14,7 +14,7 @@ use Webfactory\ContentMapping\Mapper;
 use Webfactory\ContentMapping\MapResult;
 use Webfactory\ContentMapping\SourceAdapter;
 use Webfactory\ContentMapping\Synchronizer;
-
+use Webfactory\ContentMapping\Test\TestDestinationAdapterInterfaces;
 /**
  * Tests for the Synchronize.
  */
@@ -54,9 +54,9 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->source = $this->getMock('\Webfactory\ContentMapping\SourceAdapter');
-        $this->mapper = $this->getMock('\Webfactory\ContentMapping\Mapper');
-        $this->destination = $this->getMock('\Webfactory\ContentMapping\DestinationAdapter');
+        $this->source = $this->getMock(SourceAdapter::class);
+        $this->mapper = $this->getMock(Mapper::class);
+        $this->destination = $this->getMock(TestDestinationAdapterInterfaces::class);
 
         $this->synchronizer = new Synchronizer($this->source, $this->mapper, $this->destination, new NullLogger());
     }
@@ -123,7 +123,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function synchronizeCallsUpdatedAfterCreatingNewObject()
+    public function synchronizeCallsHooksAfterCreatingNewObject()
     {
         $idOfNewSourceObject = 1;
         $newSourceObject = new SourceObjectDummy();
@@ -146,32 +146,11 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->destination->expects($this->once())
             ->method('updated');
 
-        $this->synchronizer->synchronize($this->className, false);
-    }
-
-    /**
-     * @test
-     */
-    public function synchronizeCallsCommitAfterCreatingNewObject()
-    {
-        $idOfNewSourceObject = 1;
-        $newSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newSourceObject)));
-
-        $emptySet = new \ArrayIterator();
-        $this->setUpDestinationToReturn($emptySet);
-
-        $this->mapper->expects($this->any())
-            ->method('idOf')
-            ->will($this->returnValue($idOfNewSourceObject));
-        $newlyCreatedObject = new \stdClass();
+        // afterObjectProcessed() called for every object
         $this->destination->expects($this->once())
-            ->method('createObject')
-            ->with($idOfNewSourceObject, $this->className)
-            ->will($this->returnValue($newlyCreatedObject));
-        $this->mapper->expects($this->any())
-            ->method('map')
-            ->will($this->returnValue(MapResult::unchanged()));
+            ->method('afterObjectProcessed');
+
+        // commit() called at the end
         $this->destination->expects($this->once())
             ->method('commit');
 
@@ -199,7 +178,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function synchronizeCallsCommitAfterDelete()
+    public function synchronizeCallsHooksAfterDelete()
     {
         $emptySet = new \ArrayIterator();
         $this->setUpSourceToReturn($emptySet);
@@ -207,9 +186,15 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $outdatedDestinationObject = new SourceObjectDummy();
         $this->setUpDestinationToReturn(new \ArrayIterator(array($outdatedDestinationObject)));
 
+        // delete() indicated object has to be removed
         $this->destination->expects($this->once())
             ->method('delete');
 
+        // afterObjectProcessed() called for every object
+        $this->destination->expects($this->once())
+            ->method('afterObjectProcessed');
+
+        // commit() always called at the end
         $this->destination->expects($this->once())
             ->method('commit');
 
@@ -267,32 +252,9 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->method('updated')
             ->with($olderVersionOfDestinationObject);
 
-        $this->synchronizer->synchronize($this->className, false);
-    }
-
-    /**
-     * @test
-     */
-    public function synchronizeCallsCommitAfterUpdated()
-    {
-        $sameIdForSourceAndDestinationObject = 1;
-        $newerVersionOfSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
-
-        $olderVersionOfDestinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
-
-        $this->mapper->expects($this->any())
-            ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
-        $this->destination->expects($this->any())
-            ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
-        $this->mapper->expects($this->once())
-            ->method('map')
-            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject), true));;
+        // afterObjectProcessed() called for every object
         $this->destination->expects($this->once())
-            ->method('updated');
+            ->method('afterObjectProcessed');
 
         $this->destination->expects($this->once())
             ->method('commit');
@@ -324,6 +286,13 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
 
         $this->destination->expects($this->never())
             ->method('updated');
+
+        // afterObjectProcessed() called for every object
+        $this->destination->expects($this->once())
+            ->method('afterObjectProcessed');
+
+        $this->destination->expects($this->once())
+            ->method('commit');
 
         $this->synchronizer->synchronize($this->className, false);
     }
