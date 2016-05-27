@@ -100,7 +100,7 @@ final class Synchronizer
         $this->deleteRemainingDestinationObjects();
 
         $this->destination->commit();
-        $this->logger->info('End of synchronization for {className}.', array('className' => $className));
+        $this->logger->notice('End of synchronization for {className}.', array('className' => $className));
     }
 
     private function compareQueuesAndReactAccordingly()
