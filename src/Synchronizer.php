@@ -53,10 +53,10 @@ final class Synchronizer
     private $className;
 
     /**
-     * @param SourceAdapter $source
-     * @param Mapper $mapper
+     * @param SourceAdapter      $source
+     * @param Mapper             $mapper
      * @param DestinationAdapter $destination
-     * @param LoggerInterface $logger
+     * @param LoggerInterface    $logger
      */
     public function __construct(
         SourceAdapter $source,
@@ -74,12 +74,12 @@ final class Synchronizer
      * Synchronizes the $className objects from the source system to the destination system.
      *
      * @param string $className
-     * @param bool $force
+     * @param bool   $force
      */
     public function synchronize($className, $force)
     {
         $this->logger->notice(
-            'Start of ' . ($force ? 'forced ' : '') . 'synchronization for {className}.',
+            'Start of '.($force ? 'forced ' : '').'synchronization for {className}.',
             array('className' => $className)
         );
 
@@ -168,7 +168,7 @@ final class Synchronizer
 
         $mapResult = $this->mapper->map($sourceObject, $destinationObject);
 
-        if ($mapResult->getObjectHasChanged() === true) {
+        if (true === $mapResult->getObjectHasChanged()) {
             $this->destination->updated($mapResult->getObject());
             $this->logger->info('Updated object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
         } else {

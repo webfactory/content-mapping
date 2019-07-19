@@ -1,4 +1,5 @@
 <?php
+
 namespace Webfactory\ContentMapping;
 
 /**
@@ -12,8 +13,6 @@ interface ProgressListenerInterface
      * - after createObject() / updated() calls for new objects
      * - after prepareUpdate() (for UpdateableObjectProviders) / updated() calls and changed objects
      * - after delete() calls for removed objects.
-     *
-     * @return void
      */
     public function afterObjectProcessed();
 }

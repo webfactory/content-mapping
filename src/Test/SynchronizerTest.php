@@ -14,7 +14,7 @@ use Webfactory\ContentMapping\Mapper;
 use Webfactory\ContentMapping\MapResult;
 use Webfactory\ContentMapping\SourceAdapter;
 use Webfactory\ContentMapping\Synchronizer;
-use Webfactory\ContentMapping\Test\TestDestinationAdapterInterfaces;
+
 /**
  * Tests for the Synchronize.
  */
@@ -221,7 +221,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));;
+            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -246,7 +246,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));;
+            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));
 
         $this->destination->expects($this->once())
             ->method('updated')
@@ -282,7 +282,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($sameIdForSourceAndDestinationObject));
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::unchanged()));;
+            ->will($this->returnValue(MapResult::unchanged()));
 
         $this->destination->expects($this->never())
             ->method('updated');
@@ -320,7 +320,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->with(true);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));;
+            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));
 
         $this->destination->expects($this->once())
             ->method('updated');
@@ -355,7 +355,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($newlyCreatedObject));
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($newlyCreatedObject)));;
+            ->will($this->returnValue(MapResult::changed($newlyCreatedObject)));
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -382,7 +382,7 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
 
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($destinationObject)));;
+            ->will($this->returnValue(MapResult::changed($destinationObject)));
 
         $this->destination->expects($this->once())
             ->method('delete')

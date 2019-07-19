@@ -13,5 +13,4 @@ use Webfactory\ContentMapping\ProgressListenerInterface;
 
 interface TestDestinationAdapterInterfaces extends DestinationAdapter, ProgressListenerInterface
 {
-
 }

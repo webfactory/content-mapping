@@ -22,6 +22,7 @@ interface Mapper
      *
      * @param mixed $sourceObject
      * @param mixed $destinationObject
+     *
      * @return MapResult
      */
     public function map($sourceObject, $destinationObject);
@@ -30,6 +31,7 @@ interface Mapper
      * Get the id of an object in the source system.
      *
      * @param mixed $sourceObject
+     *
      * @return int
      */
     public function idOf($sourceObject);

@@ -15,5 +15,4 @@ namespace Webfactory\ContentMapping\Test;
  */
 class DestinationObjectDummy
 {
-
 }

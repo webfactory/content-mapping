@@ -16,6 +16,7 @@ interface DestinationAdapter
      * Get an Iterator over all $className objects in the destination system, ordered by their ascending IDs.
      *
      * @param string $className
+     *
      * @return Iterator
      */
     public function getObjectsOrderedById($className);
@@ -23,8 +24,9 @@ interface DestinationAdapter
     /**
      * Create a new object in the target system identified by ($id and $className).
      *
-     * @param int $id
+     * @param int    $id
      * @param string $className
+     *
      * @return mixed
      */
     public function createObject($id, $className);
@@ -57,6 +59,7 @@ interface DestinationAdapter
      * Get the id of an object in the destination system.
      *
      * @param mixed $objectInDestinationSystem
+     *
      * @return int
      */
     public function idOf($objectInDestinationSystem);

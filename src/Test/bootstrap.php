@@ -6,9 +6,9 @@
  * file that was distributed with this source code.
  */
 
-foreach (array(__DIR__ . "/../lib/autoload.php", __DIR__ . "/../vendor/autoload.php") as $file) {
+foreach (array(__DIR__.'/../lib/autoload.php', __DIR__.'/../vendor/autoload.php') as $file) {
     if (file_exists($file)) {
-        $loader = require_once($file);
+        $loader = require_once $file;
         if (is_object($loader)) {
             $loader->add('', __DIR__);
         }
@@ -16,8 +16,8 @@ foreach (array(__DIR__ . "/../lib/autoload.php", __DIR__ . "/../vendor/autoload.
     }
 }
 
-if (file_exists(__DIR__ . "/../conf/autoprepend.php")) {
-    require_once(__DIR__ . "/../conf/autoprepend.php");
+if (file_exists(__DIR__.'/../conf/autoprepend.php')) {
+    require_once __DIR__.'/../conf/autoprepend.php';
 }
 
 // Disable circular reference garbage collection as this

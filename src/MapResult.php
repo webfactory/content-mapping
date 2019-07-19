@@ -21,14 +21,14 @@ final class MapResult
      *
      * Can be null if the $objectHasChanged is false.
      *
-     * @var mixed|null $destinationObject
+     * @var mixed|null
      */
     private $object;
 
     /**
      * Wether the object has been changed or not during the mapping.
      *
-     * @var boolean
+     * @var bool
      */
     private $objectHasChanged;
 
@@ -58,7 +58,7 @@ final class MapResult
 
     /**
      * @param mixed|null $object
-     * @param bool  $objectHasChanged
+     * @param bool       $objectHasChanged
      */
     public function __construct($object, $objectHasChanged)
     {
@@ -68,6 +68,7 @@ final class MapResult
 
     /**
      * @see object
+     *
      * @return mixed|null
      */
     public function getObject()
@@ -77,7 +78,8 @@ final class MapResult
 
     /**
      * @see objectHasChanged
-     * @return boolean
+     *
+     * @return bool
      */
     public function getObjectHasChanged()
     {
