@@ -9,6 +9,7 @@
 namespace Webfactory\ContentMapping;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * The Synchronizer synchronizes objects from a source system with these in a destination system.
@@ -52,6 +53,10 @@ final class Synchronizer
      */
     private $className;
 
+    private $lastSourceId;
+
+    private $lastDestinationId;
+
     /**
      * @param SourceAdapter      $source
      * @param Mapper             $mapper
@@ -62,12 +67,12 @@ final class Synchronizer
         SourceAdapter $source,
         Mapper $mapper,
         DestinationAdapter $destination,
-        LoggerInterface $logger
+        LoggerInterface $logger = null
     ) {
         $this->source = $source;
         $this->mapper = $mapper;
         $this->destination = $destination;
-        $this->logger = $logger;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
@@ -76,11 +81,11 @@ final class Synchronizer
      * @param string $className
      * @param bool   $force
      */
-    public function synchronize($className, $force)
+    public function synchronize($className, $force = false)
     {
         $this->logger->notice(
             'Start of '.($force ? 'forced ' : '').'synchronization for {className}.',
-            array('className' => $className)
+            ['className' => $className]
         );
 
         $this->className = $className;
@@ -100,15 +105,40 @@ final class Synchronizer
         $this->deleteRemainingDestinationObjects();
 
         $this->destination->commit();
-        $this->logger->notice('End of synchronization for {className}.', array('className' => $className));
+        $this->logger->notice('End of synchronization for {className}.', ['className' => $className]);
+    }
+
+    private function fetchSourceId($sourceObject)
+    {
+        $id = $this->mapper->idOf($sourceObject);
+
+        if ($this->lastSourceId && $id < $this->lastSourceId) {
+            throw new ContentMappingException('Source IDs are out of order');
+        }
+        $this->lastSourceId = $id;
+
+        return $id;
+    }
+
+    private function fetchDestinationId($destinationObject)
+    {
+        $id = $this->destination->idOf($destinationObject);
+
+        if ($this->lastDestinationId && $id < $this->lastDestinationId) {
+            throw new ContentMappingException('Destination IDs are out of order');
+        }
+        $this->lastDestinationId = $id;
+
+        return $id;
     }
 
     private function compareQueuesAndReactAccordingly()
     {
         $sourceObject = $this->sourceQueue->current();
-        $sourceObjectId = $this->mapper->idOf($sourceObject);
+        $sourceObjectId = $this->fetchSourceId($sourceObject);
+
         $destinationObject = $this->destinationQueue->current();
-        $destinationObjectId = $this->destination->idOf($destinationObject);
+        $destinationObjectId = $this->fetchDestinationId($destinationObject);
 
         if ($destinationObjectId > $sourceObjectId) {
             $this->insert($sourceObject);
@@ -138,7 +168,7 @@ final class Synchronizer
         $this->destination->updated($mapResult->getObject());
 
         $this->sourceQueue->next();
-        $this->logger->info('Inserted object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
+        $this->logger->info('Inserted object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
     }
 
     /**
@@ -150,9 +180,9 @@ final class Synchronizer
         $this->destinationQueue->next();
         $this->logger->info(
             'Deleted object with id {id}.',
-            array(
+            [
                 'id' => $this->destination->idOf($destinationObject),
-            )
+            ]
         );
     }
 
@@ -170,9 +200,9 @@ final class Synchronizer
 
         if (true === $mapResult->getObjectHasChanged()) {
             $this->destination->updated($mapResult->getObject());
-            $this->logger->info('Updated object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
+            $this->logger->info('Updated object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
         } else {
-            $this->logger->info('Kept object with id {id}.', array('id' => $this->mapper->idOf($sourceObject)));
+            $this->logger->info('Kept object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
         }
 
         $this->destinationQueue->next();
@@ -182,7 +212,9 @@ final class Synchronizer
     private function insertRemainingSourceObjects()
     {
         while ($this->sourceQueue->valid()) {
-            $this->insert($this->sourceQueue->current());
+            $sourceObject = $this->sourceQueue->current();
+            $this->fetchSourceId($sourceObject);
+            $this->insert($sourceObject);
             $this->notifyProgress();
         }
     }
@@ -190,7 +222,9 @@ final class Synchronizer
     private function deleteRemainingDestinationObjects()
     {
         while ($this->destinationQueue->valid()) {
-            $this->delete($this->destinationQueue->current());
+            $destinationObject = $this->destinationQueue->current();
+            $this->fetchDestinationId($destinationObject);
+            $this->delete($destinationObject);
             $this->notifyProgress();
         }
     }

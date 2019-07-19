@@ -10,11 +10,17 @@ namespace Webfactory\ContentMapping\Test;
 
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Webfactory\ContentMapping\ContentMappingException;
 use Webfactory\ContentMapping\DestinationAdapter;
 use Webfactory\ContentMapping\Mapper;
 use Webfactory\ContentMapping\MapResult;
 use Webfactory\ContentMapping\SourceAdapter;
 use Webfactory\ContentMapping\Synchronizer;
+use Webfactory\ContentMapping\Test\Stubs\DestinationObjectDummy;
+use Webfactory\ContentMapping\Test\Stubs\DestinationStub;
+use Webfactory\ContentMapping\Test\Stubs\MapperStub;
+use Webfactory\ContentMapping\Test\Stubs\SourceObjectDummy;
+use Webfactory\ContentMapping\Test\Stubs\SourceStub;
 
 /**
  * Tests for the Synchronize.
@@ -390,6 +396,34 @@ final class SynchronizerTest extends TestCase
             ->with($destinationObject);
 
         $this->synchronizer->synchronize($this->className, false);
+    }
+
+    /**
+     * @test
+     */
+    public function rejects_source_ids_out_of_order()
+    {
+        $this->expectException(ContentMappingException::class);
+
+        $source = new SourceStub(new \ArrayIterator([new SourceObjectDummy(2), new SourceObjectDummy(1)]));
+        $destination = new DestinationStub(new \ArrayIterator([new SourceObjectDummy(1), new SourceObjectDummy(2)]));
+        $synchronizer = new Synchronizer($source, new MapperStub(), $destination);
+
+        $synchronizer->synchronize('test');
+    }
+
+    /**
+     * @test
+     */
+    public function rejects_destination_ids_out_of_order()
+    {
+        $this->expectException(ContentMappingException::class);
+
+        $source = new SourceStub(new \ArrayIterator([new SourceObjectDummy(1), new SourceObjectDummy(2)]));
+        $destination = new DestinationStub(new \ArrayIterator([new SourceObjectDummy(2), new SourceObjectDummy(1)]));
+        $synchronizer = new Synchronizer($source, new MapperStub(), $destination);
+
+        $synchronizer->synchronize('test');
     }
 
     /**
