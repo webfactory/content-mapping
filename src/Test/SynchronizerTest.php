@@ -8,6 +8,7 @@
 
 namespace Webfactory\ContentMapping\Test;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Webfactory\ContentMapping\DestinationAdapter;
 use Webfactory\ContentMapping\Mapper;
@@ -18,7 +19,7 @@ use Webfactory\ContentMapping\Synchronizer;
 /**
  * Tests for the Synchronize.
  */
-final class SynchronizerTest extends \PHPUnit_Framework_TestCase
+final class SynchronizerTest extends TestCase
 {
     /**
      * System under test.
@@ -54,9 +55,9 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $this->source = $this->getMock(SourceAdapter::class);
-        $this->mapper = $this->getMock(Mapper::class);
-        $this->destination = $this->getMock(TestDestinationAdapterInterfaces::class);
+        $this->source = $this->createMock(SourceAdapter::class);
+        $this->mapper = $this->createMock(Mapper::class);
+        $this->destination = $this->createMock(TestDestinationAdapterInterfaces::class);
 
         $this->synchronizer = new Synchronizer($this->source, $this->mapper, $this->destination, new NullLogger());
     }
@@ -66,12 +67,12 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
      */
     public function synchronizeRewindsSourceQueueAndDestinationQueue()
     {
-        $sourceQueue = $this->getMock('\Iterator');
+        $sourceQueue = $this->createMock(\Iterator::class);
         $sourceQueue->expects($this->once())
             ->method('rewind');
         $this->setUpSourceToReturn($sourceQueue);
 
-        $destinationQueue = $this->getMock('\Iterator');
+        $destinationQueue = $this->createMock(\Iterator::class);
         $destinationQueue->expects($this->once())
             ->method('rewind');
         $this->setUpDestinationToReturn($destinationQueue);
@@ -88,9 +89,9 @@ final class SynchronizerTest extends \PHPUnit_Framework_TestCase
         $this->setUpSourceToReturn($emptySet);
         $this->setUpDestinationToReturn($emptySet);
 
-        $this->setExpectedException(null);
-
         $this->synchronizer->synchronize($this->className, false);
+
+        $this->assertTrue(true, 'Successful test');
     }
 
     /**

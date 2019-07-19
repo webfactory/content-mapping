@@ -1,23 +1,27 @@
 language: php
 
+sudo: false
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
 php:
-    - 5.5
-    - 5.6
-    - 7
-    - hhvm
+  - '5.5'
+  - '7.2'
+  - '7.3'
+
+env:
+    matrix:
+        - DEPS=no
+        - DEPS=low
 
 before_script:
-    - travis_retry curl -s http://getcomposer.org/installer | php
-    - travis_retry php composer.phar install
-    - mkdir -p build/logs
+  - composer self-update
+  - if [[ $DEPS = low ]]; then composer update --no-interaction --prefer-lowest; fi
+  - composer install --no-interaction
+  - mkdir -p build/logs
 
 script:
-    - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
-
-after_script:
-    - php vendor/bin/coveralls
-
-matrix:
-    allow_failures:
-        - php: 7
-        - php: hhvm
+  - composer validate --strict
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml

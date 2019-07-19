@@ -1,28 +1,29 @@
 {
-  "name": "webfactory/content-mapping",
-  "description": "Mini framework for mapping content from a source to a destination system, e.g. from Propel objects to Solr or from Doctrine entities to ElasticSearch.",
-  "minimum-stability": "stable",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "webfactory GmbH",
-      "email": "info@webfactory.de",
-      "homepage": "http://www.webfactory.de",
-      "role": "Developer"
+    "name": "webfactory/content-mapping",
+    "description": "Mini framework for mapping content from a source to a destination system, e.g. from Propel objects to Solr or from Doctrine entities to ElasticSearch.",
+    "minimum-stability": "stable",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "webfactory GmbH",
+            "email": "info@webfactory.de",
+            "homepage": "https://www.webfactory.de",
+            "role": "Developer"
+        }
+    ],
+
+    "require": {
+        "psr/log": "~1.0",
+        "php": ">=5.5.0"
+    },
+
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Webfactory\\ContentMapping\\": "src"
+        }
     }
-  ],
-
-  "require": {
-    "psr/log": "~1.0",
-    "php": ">=5.5.0"
-  },
-
-  "require-dev": {
-    "phpunit/phpunit": "~4.0",
-    "satooshi/php-coveralls": "~0.6"
-  },
-
-  "autoload": {
-    "psr-4": { "Webfactory\\ContentMapping\\": "src" }
-  }
 }
