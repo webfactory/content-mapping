@@ -32,13 +32,13 @@ final class MapResult
      */
     private $objectHasChanged;
 
+    private $objectIsUnmappable = false;
+
     /**
      * Convenience constructor to create a MapResult when the mapping
      * yields no changes and no update needs to be done.
-     *
-     * @return MapResult
      */
-    public static function unchanged()
+    public static function unchanged(): self
     {
         return new self(null, false);
     }
@@ -48,12 +48,27 @@ final class MapResult
      * object that needs to be written to the destination system.
      *
      * @param $object mixed The updated object
-     *
-     * @return MapResult
      */
-    public static function changed($object)
+    public static function changed($object): self
     {
         return new self($object, true);
+    }
+
+    /**
+     * Constructor to indicate that the source object cannot be mapped (for whatever reason).
+     *
+     * Semantics are that it must not be inserted at the destination or be
+     * removed if it already exists.
+     *
+     * NB. Such objects should not be provided by the SourceAdapter in the first place. However, there
+     * may be circumstances where you cannot detect this unless you actually try the mapping.
+     */
+    public static function unmappable(): self
+    {
+        $return = new self(null, false);
+        $return->objectIsUnmappable = true;
+
+        return $return;
     }
 
     /**
@@ -84,5 +99,10 @@ final class MapResult
     public function getObjectHasChanged()
     {
         return $this->objectHasChanged;
+    }
+
+    public function isUnmappableResult(): bool
+    {
+        return $this->objectIsUnmappable;
     }
 }

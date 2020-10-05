@@ -427,6 +427,78 @@ final class SynchronizerTest extends TestCase
     }
 
     /**
+     * @test
+     */
+    public function skips_new_unmappable_source_objects()
+    {
+        $idOfNewSourceObject = 1;
+        $newSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newSourceObject)));
+
+        $emptySet = new \ArrayIterator();
+        $this->setUpDestinationToReturn($emptySet);
+
+        $this->mapper->expects($this->any())
+            ->method('idOf')
+            ->will($this->returnValue($idOfNewSourceObject));
+        $newlyCreatedObject = new \stdClass();
+        $this->destination->expects($this->once())
+            ->method('createObject')
+            ->with($idOfNewSourceObject, $this->className)
+            ->will($this->returnValue($newlyCreatedObject));
+        $this->mapper->expects($this->any())
+            ->method('map')
+            ->will($this->returnValue(MapResult::unmappable()));
+        $this->destination->expects($this->never())
+            ->method('updated');
+
+        // afterObjectProcessed() called for every object
+        $this->destination->expects($this->once())
+            ->method('afterObjectProcessed');
+
+        // commit() called at the end
+        $this->destination->expects($this->once())
+            ->method('commit');
+
+        $this->synchronizer->synchronize($this->className, false);
+    }
+
+    /**
+     * @test
+     */
+    public function deletes_unmappable_source_objects()
+    {
+        $sameIdForSourceAndDestinationObject = 1;
+        $newerVersionOfSourceObject = new SourceObjectDummy();
+        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+
+        $olderVersionOfDestinationObject = new DestinationObjectDummy();
+        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+
+        $this->mapper->expects($this->any())
+            ->method('idOf')
+            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->destination->expects($this->any())
+            ->method('idOf')
+            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+        $this->mapper->expects($this->once())
+            ->method('map')
+            ->will($this->returnValue(MapResult::unmappable()));
+
+        $this->destination->expects($this->once())
+            ->method('delete');
+
+        // afterObjectProcessed() called for every object
+        $this->destination->expects($this->once())
+            ->method('afterObjectProcessed');
+
+        $this->destination->expects($this->once())
+            ->method('commit');
+
+        $this->synchronizer->synchronize($this->className, false);
+    }
+
+    /**
      * @param \Iterator $sourceObjects
      */
     private function setUpSourceToReturn(\Iterator $sourceObjects)

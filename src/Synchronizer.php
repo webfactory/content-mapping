@@ -165,7 +165,10 @@ final class Synchronizer
         );
 
         $mapResult = $this->mapper->map($sourceObject, $newObjectInDestinationSystem);
-        $this->destination->updated($mapResult->getObject());
+
+        if (!$mapResult->isUnmappableResult()) {
+            $this->destination->updated($mapResult->getObject());
+        }
 
         $this->sourceQueue->next();
         $this->logger->info('Inserted object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
@@ -193,12 +196,17 @@ final class Synchronizer
     private function update($sourceObject, $destinationObject)
     {
         if ($this->destination instanceof UpdateableObjectProviderInterface) {
-            $destinationObject = $this->destination->prepareUpdate($destinationObject);
+            $updateableDestinationObject = $this->destination->prepareUpdate($destinationObject);
+        } else {
+            $updateableDestinationObject = $destinationObject;
         }
 
-        $mapResult = $this->mapper->map($sourceObject, $destinationObject);
+        $mapResult = $this->mapper->map($sourceObject, $updateableDestinationObject);
 
-        if (true === $mapResult->getObjectHasChanged()) {
+        if ($mapResult->isUnmappableResult()) {
+            $this->destination->delete($destinationObject);
+            $this->logger->info('Deleted unmappable object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
+        } elseif ($mapResult->getObjectHasChanged()) {
             $this->destination->updated($mapResult->getObject());
             $this->logger->info('Updated object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
         } else {
