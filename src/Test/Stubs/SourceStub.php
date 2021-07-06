@@ -21,6 +21,10 @@ class SourceStub implements SourceAdapter
 
     public function getObjectsOrderedById()
     {
+        usort($entities, function($a, $b) {
+            return $a->getId() <=> $b->getId();
+        });
+
         return $this->objects;
     }
 }
