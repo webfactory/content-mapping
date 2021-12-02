@@ -166,12 +166,14 @@ final class Synchronizer
 
         $mapResult = $this->mapper->map($sourceObject, $newObjectInDestinationSystem);
 
-        if (!$mapResult->isUnmappableResult()) {
+        if ($mapResult->isUnmappableResult()) {
+            $this->logger->info('Skipped unmappable object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
+        } else {
             $this->destination->updated($mapResult->getObject());
+            $this->logger->info('Inserted object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
         }
 
         $this->sourceQueue->next();
-        $this->logger->info('Inserted object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
     }
 
     /**
