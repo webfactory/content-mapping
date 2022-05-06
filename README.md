@@ -1,11 +1,6 @@
-content-mapping
-===============
+# `content-mapping`
 
-[![Build Status](https://travis-ci.org/webfactory/content-mapping.svg?branch=master)](https://travis-ci.org/webfactory/content-mapping)
-[![Coverage Status](https://coveralls.io/repos/webfactory/content-mapping/badge.svg?branch=master&service=github)](https://coveralls.io/github/webfactory/content-mapping?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/webfactory/content-mapping/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/webfactory/content-mapping/?branch=master)
-
-content-mapping is a mini framework for mapping content from a source to a destination system. E.g. from Propel objects
+`content-mapping` is a mini framework for mapping content from a source to a destination system. E.g. from Propel objects
 to Solr, from Doctrine entities to ElasticSearch or from one XML structure to another. It features interfaces to guide
 you on your mapping way and ships with some abstract implementation helpers or magic implementations.
 
@@ -15,8 +10,7 @@ But that and other libraries have shortcomings in more complex situation, e.g. w
 related entities. That's why we present you content-mapping with a more general approach.
 
 
-Installation
-------------
+## Installation
 
 Add the content-mapping dependency by running the command (see http://getcomposer.org/):
 
@@ -26,8 +20,7 @@ and run
 
     php composer.phar install
 
-Concept
--------
+## Concept
 
 ![Class diagram](doc/class-diagram.png)
 
@@ -42,8 +35,7 @@ updates existing objects in the destination system (``Mapper->map()``).
 say an object has been updated or both Iterators have been processed, i.e. changes can be persisted.
 
 
-Usage
------
+## Usage
 
 To construct a ``Synchronizer``, you need implementations for the ``SourceAdaper``, ``Mapper`` and
 ``DestinationAdapter``. Please find abstract templates and ready-to-use generic implementations of SourceAdapters and
@@ -68,12 +60,11 @@ $synchronizer->synchronize($classNameToSynchronize, $force);
 ```
 
 
-Credits, Copyright and License
-------------------------------
+## Credits, Copyright and License
 
 This project was started at webfactory GmbH, Bonn.
 
 - <https://www.webfactory.de>
 - <https://twitter.com/webfactory>
 
-Copyright 2015-2019 webfactory GmbH, Bonn. Code released under [the MIT license](LICENSE).
+Copyright 2015-2022 webfactory GmbH, Bonn. Code released under [the MIT license](LICENSE).

@@ -58,10 +58,7 @@ final class Synchronizer
     private $lastDestinationId;
 
     /**
-     * @param SourceAdapter      $source
-     * @param Mapper             $mapper
-     * @param DestinationAdapter $destination
-     * @param LoggerInterface    $logger
+     * @param LoggerInterface $logger
      */
     public function __construct(
         SourceAdapter $source,

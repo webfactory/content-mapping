@@ -13,17 +13,23 @@
     ],
 
     "require": {
-        "psr/log": "~1.0",
-        "php": ">=7.1"
+        "psr/log": "^1.0",
+        "php": "^7.1|8.0.*|8.1.*"
     },
 
     "require-dev": {
-        "phpunit/phpunit": "^7.0"
+        "phpunit/phpunit": "^8.5|^9.5",
+        "symfony/phpunit-bridge": ">= 6.0"
     },
 
     "autoload": {
         "psr-4": {
             "Webfactory\\ContentMapping\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Webfactory\\ContentMapping\\Test\\": "tests"
         }
     }
 }

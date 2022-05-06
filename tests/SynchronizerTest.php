@@ -8,6 +8,7 @@
 
 namespace Webfactory\ContentMapping\Test;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Webfactory\ContentMapping\ContentMappingException;
@@ -42,24 +43,24 @@ final class SynchronizerTest extends TestCase
     private $className = 'arbitrary class';
 
     /**
-     * @var SourceAdapter|\PHPUnit_Framework_MockObject_MockObject
+     * @var SourceAdapter|MockObject
      */
     private $source;
 
     /**
-     * @var Mapper|\PHPUnit_Framework_MockObject_MockObject
+     * @var Mapper|MockObject
      */
     private $mapper;
 
     /**
-     * @var DestinationAdapter|\PHPUnit_Framework_MockObject_MockObject
+     * @var DestinationAdapter|MockObject
      */
     private $destination;
 
     /**
      * @see \PHPUnit_Framework_TestCase::setUp()
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->source = $this->createMock(SourceAdapter::class);
         $this->mapper = $this->createMock(Mapper::class);
@@ -107,22 +108,22 @@ final class SynchronizerTest extends TestCase
     {
         $idOfNewSourceObject = 1;
         $newSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newSourceObject]));
 
         $emptySet = new \ArrayIterator();
         $this->setUpDestinationToReturn($emptySet);
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($idOfNewSourceObject));
+            ->willReturn($idOfNewSourceObject);
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
             ->method('createObject')
             ->with($idOfNewSourceObject, $this->className)
-            ->will($this->returnValue($newlyCreatedObject));
+            ->willReturn($newlyCreatedObject);
         $this->mapper->expects($this->any())
             ->method('map')
-            ->will($this->returnValue(MapResult::unchanged()));
+            ->willReturn(MapResult::unchanged());
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -134,22 +135,22 @@ final class SynchronizerTest extends TestCase
     {
         $idOfNewSourceObject = 1;
         $newSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newSourceObject]));
 
         $emptySet = new \ArrayIterator();
         $this->setUpDestinationToReturn($emptySet);
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($idOfNewSourceObject));
+            ->willReturn($idOfNewSourceObject);
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
             ->method('createObject')
             ->with($idOfNewSourceObject, $this->className)
-            ->will($this->returnValue($newlyCreatedObject));
+            ->willReturn($newlyCreatedObject);
         $this->mapper->expects($this->any())
             ->method('map')
-            ->will($this->returnValue(MapResult::unchanged()));
+            ->willReturn(MapResult::unchanged());
         $this->destination->expects($this->once())
             ->method('updated');
 
@@ -173,7 +174,7 @@ final class SynchronizerTest extends TestCase
         $this->setUpSourceToReturn($emptySet);
 
         $outdatedDestinationObject = new SourceObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($outdatedDestinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$outdatedDestinationObject]));
 
         $this->destination->expects($this->once())
             ->method('delete')
@@ -191,7 +192,7 @@ final class SynchronizerTest extends TestCase
         $this->setUpSourceToReturn($emptySet);
 
         $outdatedDestinationObject = new SourceObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($outdatedDestinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$outdatedDestinationObject]));
 
         // delete() indicated object has to be removed
         $this->destination->expects($this->once())
@@ -215,20 +216,20 @@ final class SynchronizerTest extends TestCase
     {
         $sameIdForSourceAndDestinationObject = 1;
         $newerVersionOfSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newerVersionOfSourceObject]));
 
         $olderVersionOfDestinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$olderVersionOfDestinationObject]));
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->destination->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));
+            ->willReturn(MapResult::changed($olderVersionOfDestinationObject));
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -240,20 +241,20 @@ final class SynchronizerTest extends TestCase
     {
         $sameIdForSourceAndDestinationObject = 1;
         $newerVersionOfSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newerVersionOfSourceObject]));
 
         $olderVersionOfDestinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$olderVersionOfDestinationObject]));
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->destination->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));
+            ->willReturn(MapResult::changed($olderVersionOfDestinationObject));
 
         $this->destination->expects($this->once())
             ->method('updated')
@@ -276,20 +277,20 @@ final class SynchronizerTest extends TestCase
     {
         $sameIdForSourceAndDestinationObject = 1;
         $newerVersionOfSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newerVersionOfSourceObject]));
 
         $olderVersionOfDestinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$olderVersionOfDestinationObject]));
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->destination->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::unchanged()));
+            ->willReturn(MapResult::unchanged());
 
         $this->destination->expects($this->never())
             ->method('updated');
@@ -311,23 +312,23 @@ final class SynchronizerTest extends TestCase
     {
         $sameIdForSourceAndDestinationObject = 1;
         $newerVersionOfSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newerVersionOfSourceObject]));
 
         $olderVersionOfDestinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$olderVersionOfDestinationObject]));
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->destination->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->mapper->expects($this->once())
             ->method('setForce')
             ->with(true);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($olderVersionOfDestinationObject)));
+            ->willReturn(MapResult::changed($olderVersionOfDestinationObject));
 
         $this->destination->expects($this->once())
             ->method('updated');
@@ -342,27 +343,27 @@ final class SynchronizerTest extends TestCase
     {
         $idOfSourceObject = 1;
         $sourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($sourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$sourceObject]));
 
         $idOfDestinationObject = 2;
         $destinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($destinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$destinationObject]));
 
         $this->mapper->expects($this->any(0))
             ->method('idOf')
-            ->will($this->returnValue($idOfSourceObject));
+            ->willReturn($idOfSourceObject);
         $this->destination->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($idOfDestinationObject));
+            ->willReturn($idOfDestinationObject);
 
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
             ->method('createObject')
             ->with($idOfSourceObject, $this->className)
-            ->will($this->returnValue($newlyCreatedObject));
+            ->willReturn($newlyCreatedObject);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($newlyCreatedObject)));
+            ->willReturn(MapResult::changed($newlyCreatedObject));
 
         $this->synchronizer->synchronize($this->className, false);
     }
@@ -374,22 +375,22 @@ final class SynchronizerTest extends TestCase
     {
         $idOfSourceObject = 2;
         $sourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($sourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$sourceObject]));
 
         $idOfDestinationObject = 1;
         $destinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($destinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$destinationObject]));
 
         $this->mapper->expects($this->any(0))
             ->method('idOf')
-            ->will($this->returnValue($idOfSourceObject));
+            ->willReturn($idOfSourceObject);
         $this->destination->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($idOfDestinationObject));
+            ->willReturn($idOfDestinationObject);
 
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::changed($destinationObject)));
+            ->willReturn(MapResult::changed($destinationObject));
 
         $this->destination->expects($this->once())
             ->method('delete')
@@ -433,22 +434,22 @@ final class SynchronizerTest extends TestCase
     {
         $idOfNewSourceObject = 1;
         $newSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newSourceObject]));
 
         $emptySet = new \ArrayIterator();
         $this->setUpDestinationToReturn($emptySet);
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($idOfNewSourceObject));
+            ->willReturn($idOfNewSourceObject);
         $newlyCreatedObject = new \stdClass();
         $this->destination->expects($this->once())
             ->method('createObject')
             ->with($idOfNewSourceObject, $this->className)
-            ->will($this->returnValue($newlyCreatedObject));
+            ->willReturn($newlyCreatedObject);
         $this->mapper->expects($this->any())
             ->method('map')
-            ->will($this->returnValue(MapResult::unmappable()));
+            ->willReturn(MapResult::unmappable());
         $this->destination->expects($this->never())
             ->method('updated');
 
@@ -470,20 +471,20 @@ final class SynchronizerTest extends TestCase
     {
         $sameIdForSourceAndDestinationObject = 1;
         $newerVersionOfSourceObject = new SourceObjectDummy();
-        $this->setUpSourceToReturn(new \ArrayIterator(array($newerVersionOfSourceObject)));
+        $this->setUpSourceToReturn(new \ArrayIterator([$newerVersionOfSourceObject]));
 
         $olderVersionOfDestinationObject = new DestinationObjectDummy();
-        $this->setUpDestinationToReturn(new \ArrayIterator(array($olderVersionOfDestinationObject)));
+        $this->setUpDestinationToReturn(new \ArrayIterator([$olderVersionOfDestinationObject]));
 
         $this->mapper->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->destination->expects($this->any())
             ->method('idOf')
-            ->will($this->returnValue($sameIdForSourceAndDestinationObject));
+            ->willReturn($sameIdForSourceAndDestinationObject);
         $this->mapper->expects($this->once())
             ->method('map')
-            ->will($this->returnValue(MapResult::unmappable()));
+            ->willReturn(MapResult::unmappable());
 
         $this->destination->expects($this->once())
             ->method('delete');
@@ -498,23 +499,17 @@ final class SynchronizerTest extends TestCase
         $this->synchronizer->synchronize($this->className, false);
     }
 
-    /**
-     * @param \Iterator $sourceObjects
-     */
     private function setUpSourceToReturn(\Iterator $sourceObjects)
     {
         $this->source->expects($this->any())
             ->method('getObjectsOrderedById')
-            ->will($this->returnValue($sourceObjects));
+            ->willReturn($sourceObjects);
     }
 
-    /**
-     * @param \Iterator $destinationObjects
-     */
     private function setUpDestinationToReturn(\Iterator $destinationObjects)
     {
         $this->destination->expects($this->any())
             ->method('getObjectsOrderedById')
-            ->will($this->returnValue($destinationObjects));
+            ->willReturn($destinationObjects);
     }
 }
