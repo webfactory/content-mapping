@@ -8,6 +8,8 @@
 
 namespace Webfactory\ContentMapping;
 
+use Iterator;
+use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -24,11 +26,6 @@ final class Synchronizer
     private $source;
 
     /**
-     * @var \Iterator
-     */
-    private $sourceQueue;
-
-    /**
      * @var Mapper
      */
     private $mapper;
@@ -37,11 +34,6 @@ final class Synchronizer
      * @var DestinationAdapter
      */
     private $destination;
-
-    /**
-     * @var \Iterator
-     */
-    private $destinationQueue;
 
     /**
      * @var LoggerInterface
@@ -57,9 +49,6 @@ final class Synchronizer
 
     private $lastDestinationId;
 
-    /**
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         SourceAdapter $source,
         Mapper $mapper,
@@ -88,18 +77,18 @@ final class Synchronizer
         $this->className = $className;
         $this->mapper->setForce($force);
 
-        $this->sourceQueue = $this->source->getObjectsOrderedById();
-        $this->sourceQueue->rewind();
+        $this->lastSourceId = null;
+        $this->lastDestinationId = null;
 
-        $this->destinationQueue = $this->destination->getObjectsOrderedById($className);
-        $this->destinationQueue->rewind();
+        $sourceQueue = $this->source->getObjectsOrderedById();
+        $sourceQueue->rewind();
 
-        while ($this->sourceQueue->valid() && $this->destinationQueue->valid()) {
-            $this->compareQueuesAndReactAccordingly();
-        }
+        $destinationQueue = $this->destination->getObjectsOrderedById($className);
+        $destinationQueue->rewind();
 
-        $this->insertRemainingSourceObjects();
-        $this->deleteRemainingDestinationObjects();
+        $this->compareQueuesAndReactAccordingly($sourceQueue, $destinationQueue);
+        $this->insertRemainingSourceObjects($sourceQueue);
+        $this->deleteRemainingDestinationObjects($destinationQueue);
 
         $this->destination->commit();
         $this->logger->notice('End of synchronization for {className}.', ['className' => $className]);
@@ -129,26 +118,32 @@ final class Synchronizer
         return $id;
     }
 
-    private function compareQueuesAndReactAccordingly()
+    private function compareQueuesAndReactAccordingly(Iterator $sourceQueue, Iterator $destinationQueue)
     {
-        $sourceObject = $this->sourceQueue->current();
-        $sourceObjectId = $this->fetchSourceId($sourceObject);
+        while ($sourceQueue->valid() && $destinationQueue->valid()) {
+            $sourceObject = $sourceQueue->current();
+            $sourceObjectId = $this->fetchSourceId($sourceObject);
 
-        $destinationObject = $this->destinationQueue->current();
-        $destinationObjectId = $this->fetchDestinationId($destinationObject);
+            $destinationObject = $destinationQueue->current();
+            $destinationObjectId = $this->fetchDestinationId($destinationObject);
 
-        if ($destinationObjectId > $sourceObjectId) {
-            $this->insert($sourceObject);
-        } elseif ($destinationObjectId < $sourceObjectId) {
-            $this->delete($destinationObject);
-        } elseif ($destinationObjectId === $sourceObjectId) {
-            $this->update($sourceObject, $destinationObject);
-        } else {
-            $this->destinationQueue->next();
-            $this->sourceQueue->next();
+            if ($destinationObjectId > $sourceObjectId) {
+                $this->insert($sourceObject);
+                $sourceQueue->next();
+            } elseif ($destinationObjectId < $sourceObjectId) {
+                $this->delete($destinationObject);
+                $destinationQueue->next();
+            } else {
+                if ($sourceObjectId != $destinationObjectId) {
+                    throw new LogicException();
+                }
+                $this->update($sourceObject, $destinationObject);
+                $sourceQueue->next();
+                $destinationQueue->next();
+            }
+
+            $this->notifyProgress();
         }
-
-        $this->notifyProgress();
     }
 
     /**
@@ -169,8 +164,6 @@ final class Synchronizer
             $this->destination->updated($mapResult->getObject());
             $this->logger->info('Inserted object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
         }
-
-        $this->sourceQueue->next();
     }
 
     /**
@@ -179,7 +172,6 @@ final class Synchronizer
     private function delete($destinationObject)
     {
         $this->destination->delete($destinationObject);
-        $this->destinationQueue->next();
         $this->logger->info(
             'Deleted object with id {id}.',
             [
@@ -211,28 +203,27 @@ final class Synchronizer
         } else {
             $this->logger->info('Kept object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
         }
-
-        $this->destinationQueue->next();
-        $this->sourceQueue->next();
     }
 
-    private function insertRemainingSourceObjects()
+    private function insertRemainingSourceObjects(Iterator $sourceQueue)
     {
-        while ($this->sourceQueue->valid()) {
-            $sourceObject = $this->sourceQueue->current();
+        while ($sourceQueue->valid()) {
+            $sourceObject = $sourceQueue->current();
             $this->fetchSourceId($sourceObject);
             $this->insert($sourceObject);
             $this->notifyProgress();
+            $sourceQueue->next();
         }
     }
 
-    private function deleteRemainingDestinationObjects()
+    private function deleteRemainingDestinationObjects(Iterator $destinationQueue)
     {
-        while ($this->destinationQueue->valid()) {
-            $destinationObject = $this->destinationQueue->current();
+        while ($destinationQueue->valid()) {
+            $destinationObject = $destinationQueue->current();
             $this->fetchDestinationId($destinationObject);
             $this->delete($destinationObject);
             $this->notifyProgress();
+            $destinationQueue->next();
         }
     }
 
