@@ -40,11 +40,6 @@ final class Synchronizer
      */
     private $logger;
 
-    /**
-     * @var string value of the synchronize() parameter
-     */
-    private $className;
-
     private $lastSourceId;
 
     private $lastDestinationId;
@@ -63,18 +58,14 @@ final class Synchronizer
 
     /**
      * Synchronizes the $className objects from the source system to the destination system.
-     *
-     * @param string $className
-     * @param bool   $force
      */
-    public function synchronize($className, $force = false)
+    public function synchronize(string $className, bool $force = false): void
     {
         $this->logger->notice(
             'Start of '.($force ? 'forced ' : '').'synchronization for {className}.',
             ['className' => $className]
         );
 
-        $this->className = $className;
         $this->mapper->setForce($force);
 
         $this->lastSourceId = null;
@@ -86,8 +77,8 @@ final class Synchronizer
         $destinationQueue = $this->destination->getObjectsOrderedById($className);
         $destinationQueue->rewind();
 
-        $this->compareQueuesAndReactAccordingly($sourceQueue, $destinationQueue);
-        $this->insertRemainingSourceObjects($sourceQueue);
+        $this->compareQueuesAndReactAccordingly($sourceQueue, $destinationQueue, $className);
+        $this->insertRemainingSourceObjects($sourceQueue, $className);
         $this->deleteRemainingDestinationObjects($destinationQueue);
 
         $this->destination->commit();
@@ -118,7 +109,7 @@ final class Synchronizer
         return $id;
     }
 
-    private function compareQueuesAndReactAccordingly(Iterator $sourceQueue, Iterator $destinationQueue)
+    private function compareQueuesAndReactAccordingly(Iterator $sourceQueue, Iterator $destinationQueue, string $className)
     {
         while ($sourceQueue->valid() && $destinationQueue->valid()) {
             $sourceObject = $sourceQueue->current();
@@ -128,7 +119,7 @@ final class Synchronizer
             $destinationObjectId = $this->fetchDestinationId($destinationObject);
 
             if ($destinationObjectId > $sourceObjectId) {
-                $this->insert($sourceObject);
+                $this->insert($className, $sourceObject);
                 $sourceQueue->next();
             } elseif ($destinationObjectId < $sourceObjectId) {
                 $this->delete($destinationObject);
@@ -149,11 +140,11 @@ final class Synchronizer
     /**
      * @param mixed $sourceObject
      */
-    private function insert($sourceObject)
+    private function insert(string $className, $sourceObject)
     {
         $newObjectInDestinationSystem = $this->destination->createObject(
             $this->mapper->idOf($sourceObject),
-            $this->className
+            $className
         );
 
         $mapResult = $this->mapper->map($sourceObject, $newObjectInDestinationSystem);
@@ -205,12 +196,12 @@ final class Synchronizer
         }
     }
 
-    private function insertRemainingSourceObjects(Iterator $sourceQueue)
+    private function insertRemainingSourceObjects(Iterator $sourceQueue, string $className)
     {
         while ($sourceQueue->valid()) {
             $sourceObject = $sourceQueue->current();
             $this->fetchSourceId($sourceObject);
-            $this->insert($sourceObject);
+            $this->insert($className, $sourceObject);
             $this->notifyProgress();
             $sourceQueue->next();
         }
