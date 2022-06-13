@@ -19,12 +19,10 @@ interface DestinationAdapter
     /**
      * Get an Iterator over all $className objects in the destination system, ordered by their ascending IDs.
      *
-     * @param string $className
-     *
      * @return Iterator
      * @psalm-return Iterator<Tr>
      */
-    public function getObjectsOrderedById($className);
+    public function getObjectsOrderedById(string $className);
 
     /**
      * Create a new object in the target system identified by ($id and $className).
