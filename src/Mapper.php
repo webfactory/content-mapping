@@ -19,33 +19,26 @@ interface Mapper
     /**
      * Maps the content of the $sourceObject into the $destinationObject.
      *
-     * @param object $sourceObject
-     * @param object $destinationObject
-     *
      * @psalm-param Ts $sourceObject
      * @psalm-param Tw $destinationObject
      *
      * @return MapResult<Tw>
      */
-    public function map($sourceObject, $destinationObject);
+    public function map(object $sourceObject, object $destinationObject);
 
     /**
      * Get the id of an object in the source system.
-     *
-     * @param object $sourceObject
      *
      * @psalm-param Ts $sourceObject
      *
      * @return int
      */
-    public function idOf($sourceObject);
+    public function idOf(object $sourceObject);
 
     /**
      * Sets whether to force an update on the target object, even if the source has not changed.
      *
-     * @param bool $force
-     *
      * @return void
      */
-    public function setForce($force);
+    public function setForce(bool $force);
 }
