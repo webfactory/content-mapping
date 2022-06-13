@@ -37,7 +37,7 @@ interface DestinationAdapter
     /**
      * Delete the $object from the target system.
      *
-     * @param object   $objectInDestinationSystem
+     * @param object $objectInDestinationSystem
      *
      * @psalm-param Tr $objectInDestinationSystem
      *
@@ -52,7 +52,7 @@ interface DestinationAdapter
      *   a) new objects created by the createObject() method
      *   b) changed objects created by the prepareUpdate() method *only if* the object actually changed.
      *
-     * @param object   $objectInDestinationSystem
+     * @param object $objectInDestinationSystem
      *
      * @psalm-param Tw $objectInDestinationSystem
      *
@@ -71,7 +71,7 @@ interface DestinationAdapter
     /**
      * Get the id of an object in the destination system.
      *
-     * @param object   $objectInDestinationSystem
+     * @param object $objectInDestinationSystem
      *
      * @psalm-param Tr $objectInDestinationSystem
      *
