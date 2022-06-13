@@ -5,7 +5,8 @@ namespace Webfactory\ContentMapping;
 /**
  * Result of \Webfactory\ContentMapping\Mapper::map.
  *
- * @final by default.
+ * @psalm-template Tw of ?object
+ * @psalm-immutable
  */
 final class MapResult
 {
@@ -21,7 +22,8 @@ final class MapResult
      *
      * Can be null if the $objectHasChanged is false.
      *
-     * @var mixed|null
+     * @var ?object
+     * @psalm-var Tw
      */
     private $object;
 
@@ -32,11 +34,16 @@ final class MapResult
      */
     private $objectHasChanged;
 
+    /**
+     * @var bool
+     */
     private $objectIsUnmappable = false;
 
     /**
      * Convenience constructor to create a MapResult when the mapping
      * yields no changes and no update needs to be done.
+     *
+     * @psalm-return self<null>
      */
     public static function unchanged(): self
     {
@@ -47,7 +54,10 @@ final class MapResult
      * Convenience constructor to create a MapResult that carries a new or updated
      * object that needs to be written to the destination system.
      *
-     * @param $object mixed The updated object
+     * @param object $object The updated object
+     * @psalm-template Tx of object
+     * @psalm-param Tx $object
+     * @psalm-return self<Tx>
      */
     public static function changed($object): self
     {
@@ -62,6 +72,8 @@ final class MapResult
      *
      * NB. Such objects should not be provided by the SourceAdapter in the first place. However, there
      * may be circumstances where you cannot detect this unless you actually try the mapping.
+     *
+     * @psalm-return self<null>
      */
     public static function unmappable(): self
     {
@@ -72,11 +84,15 @@ final class MapResult
     }
 
     /**
-     * @param mixed|null $object
-     * @param bool       $objectHasChanged
+     * @param ?object $object
+     * @psalm-param Tw $object
      */
-    public function __construct($object, $objectHasChanged)
+    public function __construct($object, bool $objectHasChanged)
     {
+        if ($objectHasChanged && null === $object) {
+            throw new \InvalidArgumentException();
+        }
+
         $this->object = $object;
         $this->objectHasChanged = $objectHasChanged;
     }
@@ -84,7 +100,8 @@ final class MapResult
     /**
      * @see object
      *
-     * @return mixed|null
+     * @return ?object
+     * @psalm-return Tw
      */
     public function getObject()
     {
@@ -93,10 +110,9 @@ final class MapResult
 
     /**
      * @see objectHasChanged
-     *
-     * @return bool
+     * @psalm-assert-if-true !null $this->getObject()
      */
-    public function getObjectHasChanged()
+    public function getObjectHasChanged(): bool
     {
         return $this->objectHasChanged;
     }
