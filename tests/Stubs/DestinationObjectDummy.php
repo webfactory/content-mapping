@@ -10,17 +10,15 @@ namespace Webfactory\ContentMapping\Test\Stubs;
 
 class DestinationObjectDummy
 {
+    /** @var int */
     private $id;
 
-    /**
-     * @param $id
-     */
-    public function __construct($id = null)
+    public function __construct(int $id)
     {
         $this->id = $id;
     }
 
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
