@@ -24,24 +24,24 @@ class DestinationStub implements DestinationAdapter
         return $this->objects;
     }
 
-    public function createObject($id, $className)
+    public function createObject(int $id, string $className)
     {
-        return new DestinationObjectDummy();
+        return new DestinationObjectDummy($id);
     }
 
-    public function delete($objectInDestinationSystem)
-    {
-    }
-
-    public function updated($objectInDestinationSystem)
+    public function delete($objectInDestinationSystem): void
     {
     }
 
-    public function commit()
+    public function updated($objectInDestinationSystem): void
     {
     }
 
-    public function idOf($objectInDestinationSystem)
+    public function commit(): void
+    {
+    }
+
+    public function idOf($objectInDestinationSystem): int
     {
         return $objectInDestinationSystem->getId();
     }
