@@ -16,22 +16,24 @@ use Psr\Log\NullLogger;
 /**
  * The Synchronizer synchronizes objects from a source system with these in a destination system.
  *
- * @final by default.
+ * @psalm-template Ts of object
+ * @psalm-template Tr of object
+ * @psalm-template Tw of object
  */
 final class Synchronizer
 {
     /**
-     * @var SourceAdapter
+     * @var SourceAdapter<Ts>
      */
     private $source;
 
     /**
-     * @var Mapper
+     * @var Mapper<Ts, Tw>
      */
     private $mapper;
 
     /**
-     * @var DestinationAdapter
+     * @var DestinationAdapter<Tr, Tw>
      */
     private $destination;
 
@@ -40,10 +42,17 @@ final class Synchronizer
      */
     private $logger;
 
-    private $lastSourceId;
+    /** @var ?int */
+    private $lastSourceId = null;
 
-    private $lastDestinationId;
+    /** @var ?int */
+    private $lastDestinationId = null;
 
+    /**
+     * @psalm-param SourceAdapter<Ts> $source
+     * @psalm-param Mapper<Ts, Tw> $mapper
+     * @psalm-param DestinationAdapter<Tr, Tw> $destination
+     */
     public function __construct(
         SourceAdapter $source,
         Mapper $mapper,
@@ -85,7 +94,10 @@ final class Synchronizer
         $this->logger->notice('End of synchronization for {className}.', ['className' => $className]);
     }
 
-    private function fetchSourceId($sourceObject)
+    /**
+     * @psalm-param Ts $sourceObject
+     */
+    private function fetchSourceId(object $sourceObject): int
     {
         $id = $this->mapper->idOf($sourceObject);
 
@@ -97,7 +109,10 @@ final class Synchronizer
         return $id;
     }
 
-    private function fetchDestinationId($destinationObject)
+    /**
+     * @psalm-param Tr $destinationObject
+     */
+    private function fetchDestinationId(object $destinationObject): int
     {
         $id = $this->destination->idOf($destinationObject);
 
@@ -109,7 +124,11 @@ final class Synchronizer
         return $id;
     }
 
-    private function compareQueuesAndReactAccordingly(Iterator $sourceQueue, Iterator $destinationQueue, string $className)
+    /**
+     * @psalm-param Iterator<Ts> $sourceQueue
+     * @psalm-param Iterator<Tr> $destinationQueue
+     */
+    private function compareQueuesAndReactAccordingly(Iterator $sourceQueue, Iterator $destinationQueue, string $className): void
     {
         while ($sourceQueue->valid() && $destinationQueue->valid()) {
             $sourceObject = $sourceQueue->current();
@@ -138,9 +157,9 @@ final class Synchronizer
     }
 
     /**
-     * @param mixed $sourceObject
+     * @psalm-param Ts $sourceObject
      */
-    private function insert(string $className, $sourceObject)
+    private function insert(string $className, object $sourceObject): void
     {
         $newObjectInDestinationSystem = $this->destination->createObject(
             $this->mapper->idOf($sourceObject),
@@ -151,16 +170,24 @@ final class Synchronizer
 
         if ($mapResult->isUnmappableResult()) {
             $this->logger->info('Skipped unmappable object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
-        } else {
-            $this->destination->updated($mapResult->getObject());
-            $this->logger->info('Inserted object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
+
+            return;
         }
+
+        if (!$mapResult->getObjectHasChanged()) {
+            return;
+        }
+
+        /** @var Tw */
+        $result = $mapResult->getObject();
+        $this->destination->updated($result);
+        $this->logger->info('Inserted object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
     }
 
     /**
-     * @param mixed $destinationObject
+     * @psalm-param Tr $destinationObject
      */
-    private function delete($destinationObject)
+    private function delete(object $destinationObject): void
     {
         $this->destination->delete($destinationObject);
         $this->logger->info(
@@ -172,14 +199,17 @@ final class Synchronizer
     }
 
     /**
-     * @param mixed $sourceObject
-     * @param mixed $destinationObject
+     * @psalm-param Ts $sourceObject
+     * @psalm-param Tr $destinationObject
      */
-    private function update($sourceObject, $destinationObject)
+    private function update(object $sourceObject, object $destinationObject): void
     {
         if ($this->destination instanceof UpdateableObjectProviderInterface) {
-            $updateableDestinationObject = $this->destination->prepareUpdate($destinationObject);
+            /** @var UpdateableObjectProviderInterface<Tr,Tw> */
+            $dst = $this->destination;
+            $updateableDestinationObject = $dst->prepareUpdate($destinationObject);
         } else {
+            /** @var Tw */
             $updateableDestinationObject = $destinationObject;
         }
 
@@ -188,15 +218,28 @@ final class Synchronizer
         if ($mapResult->isUnmappableResult()) {
             $this->destination->delete($destinationObject);
             $this->logger->info('Deleted unmappable object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
-        } elseif ($mapResult->getObjectHasChanged()) {
-            $this->destination->updated($mapResult->getObject());
-            $this->logger->info('Updated object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
-        } else {
-            $this->logger->info('Kept object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
+
+            return;
         }
+
+        if (!$mapResult->getObjectHasChanged()) {
+            $this->logger->info('Kept object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
+
+            return;
+        }
+
+        /** @var Tw */
+        $result = $mapResult->getObject();
+
+        $this->destination->updated($result);
+        $this->logger->info('Updated object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
     }
 
-    private function insertRemainingSourceObjects(Iterator $sourceQueue, string $className)
+    /**
+     * @psalm-param Iterator<Ts> $sourceQueue
+     * @psalm-param Iterator<Tr> $destinationQueue
+     */
+    private function insertRemainingSourceObjects(Iterator $sourceQueue, string $className): void
     {
         while ($sourceQueue->valid()) {
             $sourceObject = $sourceQueue->current();
@@ -207,7 +250,11 @@ final class Synchronizer
         }
     }
 
-    private function deleteRemainingDestinationObjects(Iterator $destinationQueue)
+    /**
+     * @psalm-param Iterator<Ts> $sourceQueue
+     * @psalm-param Iterator<Tr> $destinationQueue
+     */
+    private function deleteRemainingDestinationObjects(Iterator $destinationQueue): void
     {
         while ($destinationQueue->valid()) {
             $destinationObject = $destinationQueue->current();
@@ -218,7 +265,7 @@ final class Synchronizer
         }
     }
 
-    private function notifyProgress()
+    private function notifyProgress(): void
     {
         if ($this->destination instanceof ProgressListenerInterface) {
             $this->destination->afterObjectProcessed();

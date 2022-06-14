@@ -10,36 +10,35 @@ namespace Webfactory\ContentMapping;
 
 /**
  * Maps objects from a source system into objects of a destination system.
+ *
+ * @psalm-template Ts of object
+ * @psalm-template Tw of object
  */
 interface Mapper
 {
     /**
      * Maps the content of the $sourceObject into the $destinationObject.
      *
-     * What exactly these objects are depends on the source and destination system. The objects
-     * passed in will be those returned from the SourceAdapter::getObjectsOrderedById() and
-     * DestinationAdapter::getObjectsOrderedById() methods.
+     * @psalm-param Ts $sourceObject
+     * @psalm-param Tw $destinationObject
      *
-     * @param mixed $sourceObject
-     * @param mixed $destinationObject
-     *
-     * @return MapResult
+     * @return MapResult<Tw>|MapResult<null>
      */
-    public function map($sourceObject, $destinationObject);
+    public function map(object $sourceObject, object $destinationObject);
 
     /**
      * Get the id of an object in the source system.
      *
-     * @param mixed $sourceObject
+     * @psalm-param Ts $sourceObject
      *
      * @return int
      */
-    public function idOf($sourceObject);
+    public function idOf(object $sourceObject);
 
     /**
      * Sets whether to force an update on the target object, even if the source has not changed.
      *
-     * @param bool $force
+     * @return void
      */
-    public function setForce($force);
+    public function setForce(bool $force);
 }

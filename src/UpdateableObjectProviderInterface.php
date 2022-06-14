@@ -17,15 +17,20 @@ namespace Webfactory\ContentMapping;
  * memory usage / GC, as the updated object (containing chunks of data that needs to be written
  * to the destination) can be pruned/GC'd after the update has been performed, while the
  * result set must be kept around until the entire process has finished.
+ *
+ * @psalm-template Tr of object
+ * @psalm-template Tw of object
  */
 interface UpdateableObjectProviderInterface
 {
     /**
      * Create the object instance that can be used to update data in the target system.
      *
-     * @param mixed $destinationObject A destination object as returned from getObjectsOrderedById()
+     * @param object $destinationObject A destination object as returned from getObjectsOrderedById()
+     * @psalm-param Tr $destinationObject
      *
-     * @return mixed The (possibly new) object that will be passed to the Mapper.
+     * @return object The (possibly new) object that will be passed to the Mapper.
+     * @psalm-return Tw
      */
-    public function prepareUpdate($destinationObject);
+    public function prepareUpdate(object $destinationObject);
 }

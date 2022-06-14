@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="1"
+    resolveFromConfigFile="true"
+    memoizeMethodCallResults="true"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="https://getpsalm.org/schema/config"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+>
+    <projectFiles>
+        <directory name="src"/>
+        <ignoreFiles>
+            <directory name="vendor"/>
+        </ignoreFiles>
+    </projectFiles>
+
+    <issueHandlers>
+        <ImplicitToStringCast errorLevel="suppress"/>
+        <MoreSpecificReturnType errorLevel="suppress"/>
+        <DeprecatedProperty errorLevel="suppress"/>
+        <DeprecatedMethod errorLevel="suppress"/>
+        <DeprecatedClass errorLevel="suppress"/>
+    </issueHandlers>
+
+</psalm>

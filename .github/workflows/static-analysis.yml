@@ -1,0 +1,45 @@
+name: Statische Code-Analyse
+
+permissions:
+    contents: read
+    packages: read
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+
+env:
+    PHP_VERSION: 7.4
+    PSALM_VERSION: 4.22.0
+
+jobs:
+    Psalm:
+        name: Psalm
+        runs-on: ubuntu-20.04
+        steps:
+            -   uses: shivammathur/setup-php@v2
+                with:
+                  php-version: ${{ env.PHP_VERSION }}
+                  tools: composer:v2
+            -   uses: actions/checkout@v2
+            -   uses: actions/cache@v2
+                with:
+                    path: vendor
+                    key: composer-${{ runner.os }}-${{ env.PHP_VERSION }}-${{ hashFiles('composer.json') }}
+                    restore-keys: |
+                        composer-${{ runner.os }}-${{ env.PHP_VERSION }}-
+                        composer-${{ runner.os }}-
+            -   run: |
+                    composer install --no-interaction --no-progress --ansi --no-scripts
+                    composer show
+            -   name: Restore Psalm cache
+                uses: actions/cache@v2
+                with:
+                    path: /home/runner/.cache/psalm
+                    key: psalm-${{ env.PSALM_VERSION }}-${{ env.PHP_VERSION }}
+            -   name: Run Psalm
+                run: |
+                    docker pull --quiet ghcr.io/webfactory/psalm:$PSALM_VERSION
+                    docker run --tty -v $(pwd):/app -v $HOME/cache:/cache ghcr.io/webfactory/psalm:$PSALM_VERSION --show-info=false --stats --output-format=github

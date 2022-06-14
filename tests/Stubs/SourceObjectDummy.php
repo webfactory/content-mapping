@@ -10,20 +10,15 @@ namespace Webfactory\ContentMapping\Test\Stubs;
 
 class SourceObjectDummy
 {
+    /** @var int */
     private $id;
 
-    /**
-     * @param $id
-     */
-    public function __construct($id = null)
+    public function __construct(int $id = 1)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
