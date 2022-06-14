@@ -22,7 +22,7 @@ interface Mapper
      * @psalm-param Ts $sourceObject
      * @psalm-param Tw $destinationObject
      *
-     * @return MapResult<Tw>
+     * @return MapResult<Tw>|MapResult<null>
      */
     public function map(object $sourceObject, object $destinationObject);
 
