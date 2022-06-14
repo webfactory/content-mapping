@@ -59,7 +59,7 @@ final class MapResult
      * @psalm-param Tx $object
      * @psalm-return self<Tx>
      */
-    public static function changed($object): self
+    public static function changed(object $object): self
     {
         return new self($object, true);
     }
@@ -84,10 +84,9 @@ final class MapResult
     }
 
     /**
-     * @param ?object $object
      * @psalm-param Tw $object
      */
-    public function __construct($object, bool $objectHasChanged)
+    public function __construct(?object $object, bool $objectHasChanged)
     {
         if ($objectHasChanged && null === $object) {
             throw new \InvalidArgumentException();

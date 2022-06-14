@@ -32,5 +32,5 @@ interface UpdateableObjectProviderInterface
      * @return object The (possibly new) object that will be passed to the Mapper.
      * @psalm-return Tw
      */
-    public function prepareUpdate($destinationObject);
+    public function prepareUpdate(object $destinationObject);
 }

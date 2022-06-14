@@ -35,13 +35,11 @@ interface DestinationAdapter
     /**
      * Delete the $object from the target system.
      *
-     * @param object $objectInDestinationSystem
-     *
      * @psalm-param Tr $objectInDestinationSystem
      *
      * @return void
      */
-    public function delete($objectInDestinationSystem);
+    public function delete(object $objectInDestinationSystem);
 
     /**
      * This method is a hook e.g. to notice an external change tracker that the $object has been updated.
@@ -50,13 +48,11 @@ interface DestinationAdapter
      *   a) new objects created by the createObject() method
      *   b) changed objects created by the prepareUpdate() method *only if* the object actually changed.
      *
-     * @param object $objectInDestinationSystem
-     *
      * @psalm-param Tw $objectInDestinationSystem
      *
      * @return void
      */
-    public function updated($objectInDestinationSystem);
+    public function updated(object $objectInDestinationSystem);
 
     /**
      * This method is a hook e.g. to notice an external change tracker that all the in memory synchronization is
@@ -69,11 +65,9 @@ interface DestinationAdapter
     /**
      * Get the id of an object in the destination system.
      *
-     * @param object $objectInDestinationSystem
-     *
      * @psalm-param Tr $objectInDestinationSystem
      *
      * @return int
      */
-    public function idOf($objectInDestinationSystem);
+    public function idOf(object $objectInDestinationSystem);
 }

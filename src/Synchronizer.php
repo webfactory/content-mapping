@@ -95,10 +95,9 @@ final class Synchronizer
     }
 
     /**
-     * @param object $sourceObject
      * @psalm-param Ts $sourceObject
      */
-    private function fetchSourceId($sourceObject): int
+    private function fetchSourceId(object $sourceObject): int
     {
         $id = $this->mapper->idOf($sourceObject);
 
@@ -111,10 +110,9 @@ final class Synchronizer
     }
 
     /**
-     * @param object $destinationObject
      * @psalm-param Tr $destinationObject
      */
-    private function fetchDestinationId($destinationObject): int
+    private function fetchDestinationId(object $destinationObject): int
     {
         $id = $this->destination->idOf($destinationObject);
 
@@ -159,10 +157,9 @@ final class Synchronizer
     }
 
     /**
-     * @param object $sourceObject
      * @psalm-param Ts $sourceObject
      */
-    private function insert(string $className, $sourceObject): void
+    private function insert(string $className, object $sourceObject): void
     {
         $newObjectInDestinationSystem = $this->destination->createObject(
             $this->mapper->idOf($sourceObject),
@@ -188,10 +185,9 @@ final class Synchronizer
     }
 
     /**
-     * @param object $destinationObject
      * @psalm-param Tr $destinationObject
      */
-    private function delete($destinationObject): void
+    private function delete(object $destinationObject): void
     {
         $this->destination->delete($destinationObject);
         $this->logger->info(
@@ -203,12 +199,10 @@ final class Synchronizer
     }
 
     /**
-     * @param object $sourceObject
-     * @param object $destinationObject
      * @psalm-param Ts $sourceObject
      * @psalm-param Tr $destinationObject
      */
-    private function update($sourceObject, $destinationObject): void
+    private function update(object $sourceObject, object $destinationObject): void
     {
         if ($this->destination instanceof UpdateableObjectProviderInterface) {
             /** @var UpdateableObjectProviderInterface<Tr,Tw> */
