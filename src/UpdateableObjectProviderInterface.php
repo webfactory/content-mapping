@@ -27,9 +27,11 @@ interface UpdateableObjectProviderInterface
      * Create the object instance that can be used to update data in the target system.
      *
      * @param object $destinationObject A destination object as returned from getObjectsOrderedById()
+     *
      * @psalm-param Tr $destinationObject
      *
      * @return object The (possibly new) object that will be passed to the Mapper.
+     *
      * @psalm-return Tw
      */
     public function prepareUpdate(object $destinationObject);

@@ -6,6 +6,7 @@ namespace Webfactory\ContentMapping;
  * Result of \Webfactory\ContentMapping\Mapper::map.
  *
  * @psalm-template Tw of ?object
+ *
  * @psalm-immutable
  */
 final class MapResult
@@ -23,6 +24,7 @@ final class MapResult
      * Can be null if the $objectHasChanged is false.
      *
      * @var ?object
+     *
      * @psalm-var Tw
      */
     private $object;
@@ -55,8 +57,11 @@ final class MapResult
      * object that needs to be written to the destination system.
      *
      * @param object $object The updated object
+     *
      * @psalm-template Tx of object
+     *
      * @psalm-param Tx $object
+     *
      * @psalm-return self<Tx>
      */
     public static function changed(object $object): self
@@ -100,6 +105,7 @@ final class MapResult
      * @see object
      *
      * @return ?object
+     *
      * @psalm-return Tw
      */
     public function getObject()
@@ -109,6 +115,7 @@ final class MapResult
 
     /**
      * @see objectHasChanged
+     *
      * @psalm-assert-if-true !null $this->getObject()
      */
     public function getObjectHasChanged(): bool

@@ -20,6 +20,7 @@ interface DestinationAdapter
      * Get an Iterator over all $className objects in the destination system, ordered by their ascending IDs.
      *
      * @return Iterator
+     *
      * @psalm-return Iterator<Tr>
      */
     public function getObjectsOrderedById(string $className);
@@ -28,6 +29,7 @@ interface DestinationAdapter
      * Create a new object in the target system identified by ($id and $className).
      *
      * @return object
+     *
      * @psalm-return Tw
      */
     public function createObject(int $id, string $className);
