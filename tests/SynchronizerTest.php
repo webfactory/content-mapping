@@ -81,6 +81,7 @@ final class SynchronizerTest extends TestCase
 
     /**
      * @test
+     *
      * @doesNotPerformAssertions
      */
     public function synchronizeHandlesEmptySourceObjectsSetAndEmptyDestinationObjectsSet()

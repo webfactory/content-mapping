@@ -22,6 +22,7 @@ interface SourceAdapter
      * Get an Iterator over all objects in the source system, ordered by their ascending IDs.
      *
      * @return Iterator
+     *
      * @psalm-return Iterator<Ts>
      */
     public function getObjectsOrderedById();
