@@ -24,7 +24,7 @@ jobs:
                   php-version: ${{ env.PHP_VERSION }}
                   tools: composer:v2
             -   uses: actions/checkout@v3
-            -   uses: actions/cache@v2
+            -   uses: actions/cache@v3
                 with:
                     path: vendor
                     key: composer-${{ runner.os }}-${{ env.PHP_VERSION }}-${{ hashFiles('composer.json') }}
@@ -35,7 +35,7 @@ jobs:
                     composer install --no-interaction --no-progress --ansi --no-scripts
                     composer show
             -   name: Restore Psalm cache
-                uses: actions/cache@v2
+                uses: actions/cache@v3
                 with:
                     path: /home/runner/.cache/psalm
                     key: psalm-${{ env.PSALM_VERSION }}-${{ env.PHP_VERSION }}
