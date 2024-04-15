@@ -19,6 +19,8 @@ jobs:
                     - { php-version: 7.2, dependency-version: prefer-lowest }
                     - { php-version: 7.4, dependency-version: prefer-stable }
                     - { php-version: 8.1, dependency-version: prefer-stable }
+                    - { php-version: 8.2, dependency-version: prefer-stable }
+                    - { php-version: 8.3, dependency-version: prefer-stable }
         name: PHPUnit (PHP ${{matrix.php-version}}, ${{ matrix.dependency-version }})
         steps:
             -   uses: shivammathur/setup-php@v2
