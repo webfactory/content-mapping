@@ -17,15 +17,15 @@ env:
 jobs:
     Psalm:
         name: Psalm
-        runs-on: ubuntu-20.04
+        runs-un: ubuntu-22.04
         steps:
             -   uses: shivammathur/setup-php@v2
                 with:
                   php-version: ${{ env.PHP_VERSION }}
                   coverage: none
                   tools: composer:v2
-            -   uses: actions/checkout@v3
-            -   uses: actions/cache@v3
+            -   uses: actions/checkout@v4
+            -   uses: actions/cache@v4
                 with:
                     path: vendor
                     key: composer-${{ runner.os }}-${{ env.PHP_VERSION }}-${{ hashFiles('composer.json') }}
@@ -36,7 +36,7 @@ jobs:
                     composer install --no-interaction --no-progress --ansi --no-scripts
                     composer show
             -   name: Restore Psalm cache
-                uses: actions/cache@v3
+                uses: actions/cache@v4
                 with:
                     path: /home/runner/.cache/psalm
                     key: psalm-${{ env.PSALM_VERSION }}-${{ env.PHP_VERSION }}
