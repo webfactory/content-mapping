@@ -17,7 +17,7 @@ env:
 jobs:
     Psalm:
         name: Psalm
-        runs-un: ubuntu-22.04
+        runs-on: ubuntu-22.04
         steps:
             -   uses: shivammathur/setup-php@v2
                 with:
