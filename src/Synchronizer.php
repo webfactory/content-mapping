@@ -9,7 +9,6 @@
 namespace Webfactory\ContentMapping;
 
 use Iterator;
-use LogicException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -43,10 +42,10 @@ final class Synchronizer
     private $logger;
 
     /** @var ?int */
-    private $lastSourceId = null;
+    private $lastSourceId;
 
     /** @var ?int */
-    private $lastDestinationId = null;
+    private $lastDestinationId;
 
     /**
      * @psalm-param SourceAdapter<Ts> $source
@@ -57,7 +56,7 @@ final class Synchronizer
         SourceAdapter $source,
         Mapper $mapper,
         DestinationAdapter $destination,
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     ) {
         $this->source = $source;
         $this->mapper = $mapper;
@@ -128,7 +127,7 @@ final class Synchronizer
      * @psalm-param Iterator<Ts> $sourceQueue
      * @psalm-param Iterator<Tr> $destinationQueue
      */
-    private function compareQueuesAndReactAccordingly(Iterator $sourceQueue, Iterator $destinationQueue, string $className): void
+    private function compareQueuesAndReactAccordingly(\Iterator $sourceQueue, \Iterator $destinationQueue, string $className): void
     {
         while ($sourceQueue->valid() && $destinationQueue->valid()) {
             $sourceObject = $sourceQueue->current();
@@ -145,7 +144,7 @@ final class Synchronizer
                 $destinationQueue->next();
             } else {
                 if ($sourceObjectId != $destinationObjectId) {
-                    throw new LogicException();
+                    throw new \LogicException();
                 }
                 $this->update($sourceObject, $destinationObject);
                 $sourceQueue->next();
@@ -239,7 +238,7 @@ final class Synchronizer
      * @psalm-param Iterator<Ts> $sourceQueue
      * @psalm-param Iterator<Tr> $destinationQueue
      */
-    private function insertRemainingSourceObjects(Iterator $sourceQueue, string $className): void
+    private function insertRemainingSourceObjects(\Iterator $sourceQueue, string $className): void
     {
         while ($sourceQueue->valid()) {
             $sourceObject = $sourceQueue->current();
@@ -254,7 +253,7 @@ final class Synchronizer
      * @psalm-param Iterator<Ts> $sourceQueue
      * @psalm-param Iterator<Tr> $destinationQueue
      */
-    private function deleteRemainingDestinationObjects(Iterator $destinationQueue): void
+    private function deleteRemainingDestinationObjects(\Iterator $destinationQueue): void
     {
         while ($destinationQueue->valid()) {
             $destinationObject = $destinationQueue->current();

@@ -21,7 +21,7 @@ interface SourceAdapter
     /**
      * Get an Iterator over all objects in the source system, ordered by their ascending IDs.
      *
-     * @return Iterator
+     * @return \Iterator
      *
      * @psalm-return Iterator<Ts>
      */
