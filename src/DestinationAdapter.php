@@ -19,7 +19,7 @@ interface DestinationAdapter
     /**
      * Get an Iterator over all $className objects in the destination system, ordered by their ascending IDs.
      *
-     * @return Iterator
+     * @return \Iterator
      *
      * @psalm-return Iterator<Tr>
      */

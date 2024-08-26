@@ -11,10 +11,7 @@ class SourceStub implements SourceAdapter
      */
     private $objects;
 
-    /**
-     * @param $objects
-     */
-    public function __construct(\Iterator $objects = null)
+    public function __construct(?\Iterator $objects = null)
     {
         $this->objects = $objects ?: new \ArrayIterator();
     }
