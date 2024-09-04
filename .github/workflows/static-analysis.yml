@@ -11,13 +11,13 @@ on:
     pull_request:
 
 env:
-    PHP_VERSION: 7.4
-    PSALM_VERSION: 4.22.0
+    PHP_VERSION: 8.3
+    PSALM_VERSION: 5.25.0
 
 jobs:
     Psalm:
         name: Psalm
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-latest
         steps:
             -   uses: shivammathur/setup-php@v2
                 with:
