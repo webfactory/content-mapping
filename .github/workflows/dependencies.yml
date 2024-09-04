@@ -33,4 +33,4 @@ jobs:
             -   run: |
                     composer install --no-interaction --no-progress --ansi --no-scripts
                     composer show
-            -   uses: docker://webfactory/composer-require-checker:4.12.0
+            -   uses: docker://ghcr.io/webfactory/composer-require-checker:4.12.0
