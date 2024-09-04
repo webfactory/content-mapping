@@ -100,7 +100,7 @@ final class Synchronizer
     {
         $id = $this->mapper->idOf($sourceObject);
 
-        if ($this->lastSourceId !== null && $id < $this->lastSourceId) {
+        if (null !== $this->lastSourceId && $id < $this->lastSourceId) {
             throw new ContentMappingException('Source IDs are out of order');
         }
         $this->lastSourceId = $id;
@@ -115,7 +115,7 @@ final class Synchronizer
     {
         $id = $this->destination->idOf($destinationObject);
 
-        if ($this->lastDestinationId !== null && $id < $this->lastDestinationId) {
+        if (null !== $this->lastDestinationId && $id < $this->lastDestinationId) {
             throw new ContentMappingException('Destination IDs are out of order');
         }
         $this->lastDestinationId = $id;
