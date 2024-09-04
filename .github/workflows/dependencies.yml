@@ -10,12 +10,12 @@ on:
     pull_request:
 
 env:
-    PHP_VERSION: 8.1
+    PHP_VERSION: 8.3
 
 jobs:
     composer-require-checker:
         name: Check missing composer requirements
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-latest
         steps:
             -   uses: shivammathur/setup-php@v2
                 with:
@@ -33,4 +33,4 @@ jobs:
             -   run: |
                     composer install --no-interaction --no-progress --ansi --no-scripts
                     composer show
-            -   uses: docker://webfactory/composer-require-checker:3.2.0
+            -   uses: docker://webfactory/composer-require-checker:4.12.0
