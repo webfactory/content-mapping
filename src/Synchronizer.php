@@ -222,7 +222,7 @@ final class Synchronizer
         }
 
         if (!$mapResult->getObjectHasChanged()) {
-            $this->logger->info('Kept object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
+            $this->logger->debug('Kept object with id {id}.', ['id' => $this->mapper->idOf($sourceObject)]);
 
             return;
         }
