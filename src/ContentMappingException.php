@@ -2,6 +2,6 @@
 
 namespace Webfactory\ContentMapping;
 
-class ContentMappingException extends \RuntimeException
+final class ContentMappingException extends \RuntimeException
 {
 }
