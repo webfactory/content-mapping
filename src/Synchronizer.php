@@ -18,6 +18,7 @@ use Psr\Log\NullLogger;
  * @psalm-template Ts of object
  * @psalm-template Tr of object
  * @psalm-template Tw of object
+ * @psalm-api
  */
 final class Synchronizer
 {
@@ -131,9 +132,16 @@ final class Synchronizer
     {
         while ($sourceQueue->valid() && $destinationQueue->valid()) {
             $sourceObject = $sourceQueue->current();
-            $sourceObjectId = $this->fetchSourceId($sourceObject);
+            if (null === $sourceObject) {
+                throw new ContentMappingException('Source object is missing');
+            }
 
             $destinationObject = $destinationQueue->current();
+            if (null === $destinationObject) {
+                throw new ContentMappingException('Destination object is missing');
+            }
+
+            $sourceObjectId = $this->fetchSourceId($sourceObject);
             $destinationObjectId = $this->fetchDestinationId($destinationObject);
 
             if ($destinationObjectId > $sourceObjectId) {
@@ -236,12 +244,15 @@ final class Synchronizer
 
     /**
      * @psalm-param Iterator<Ts> $sourceQueue
-     * @psalm-param Iterator<Tr> $destinationQueue
      */
     private function insertRemainingSourceObjects(\Iterator $sourceQueue, string $className): void
     {
         while ($sourceQueue->valid()) {
             $sourceObject = $sourceQueue->current();
+            if (null === $sourceObject) {
+                throw new ContentMappingException('Source object is missing');
+            }
+
             $this->fetchSourceId($sourceObject);
             $this->insert($className, $sourceObject);
             $this->notifyProgress();
@@ -250,13 +261,16 @@ final class Synchronizer
     }
 
     /**
-     * @psalm-param Iterator<Ts> $sourceQueue
      * @psalm-param Iterator<Tr> $destinationQueue
      */
     private function deleteRemainingDestinationObjects(\Iterator $destinationQueue): void
     {
         while ($destinationQueue->valid()) {
             $destinationObject = $destinationQueue->current();
+            if (null === $destinationObject) {
+                throw new ContentMappingException('Destination object is missing');
+            }
+
             $this->fetchDestinationId($destinationObject);
             $this->delete($destinationObject);
             $this->notifyProgress();
