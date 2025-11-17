@@ -46,7 +46,7 @@ final class MapResult
      * yields no changes and no update needs to be done.
      *
      * @psalm-return self<null>
-
+     *
      * @psalm-api
      */
     public static function unchanged(): self
