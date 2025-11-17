@@ -19,6 +19,7 @@
         <DeprecatedProperty errorLevel="suppress"/>
         <DeprecatedMethod errorLevel="suppress"/>
         <DeprecatedClass errorLevel="suppress"/>
+        <DeprecatedClass errorLevel="suppress"/>
     </issueHandlers>
 
 </psalm>

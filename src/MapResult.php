@@ -46,6 +46,8 @@ final class MapResult
      * yields no changes and no update needs to be done.
      *
      * @psalm-return self<null>
+
+     * @psalm-api
      */
     public static function unchanged(): self
     {
@@ -63,6 +65,8 @@ final class MapResult
      * @psalm-param Tx $object
      *
      * @psalm-return self<Tx>
+     *
+     * @psalm-api
      */
     public static function changed(object $object): self
     {
@@ -79,6 +83,8 @@ final class MapResult
      * may be circumstances where you cannot detect this unless you actually try the mapping.
      *
      * @psalm-return self<null>
+     *
+     * @psalm-api
      */
     public static function unmappable(): self
     {
