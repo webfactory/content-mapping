@@ -65,6 +65,5 @@ $synchronizer->synchronize($classNameToSynchronize, $force);
 This project was started at webfactory GmbH, Bonn.
 
 - <https://www.webfactory.de>
-- <https://twitter.com/webfactory>
 
-Copyright 2015-2022 webfactory GmbH, Bonn. Code released under [the MIT license](LICENSE).
+Copyright 2015-2025 webfactory GmbH, Bonn. Code released under [the MIT license](LICENSE).
